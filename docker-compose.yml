@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  gemblock-cms:
+    container_name: gemblock-cms
+    image: registry.beetdev.com/gemblock/gemblock-cms:v1.0.0
+    ports:
+      - '3000:80'
+    volumes:
+      - ./compose/docker/nginx/conf:/etc/nginx/conf.d/
+    networks:
+      - network-bridge
+
+networks:
+  network-bridge:
+    driver: bridge
