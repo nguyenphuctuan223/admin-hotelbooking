@@ -1,36 +1,34 @@
 // PROJECT IMPORTS
 
-export interface AdminState {
-  admin: Admin[];
+export interface HotelState {
+  hotels: Hotel[];
   pageCount?: number;
   currentPage: number;
   error?: any;
 }
 export interface Payload {
   id?: string | number;
-  params?: Admin;
+  params?: Hotel;
   callback?: (response: any) => void;
 }
 
-export type AdminFilter = {
+export type HotelFilter = {
   search?: string;
-  isTrust?: number | string;
-  isMint?: number | string;
-  isLogin?: number | string;
   currentPage: number;
   limit?: number;
 };
 
-export type Admin = {
+export type Hotel = {
   _id?: string;
-  username?: string;
-  email?: string;
-  password?: string;
+  name?: string;
+  address?: string;
+  description?: string;
+  imgURL?: string;
+  area?: string;
+  rooms?: string;
   createdAt?: string;
   updatedAt?: string;
-  bio?: string;
   __v?: number;
-  isAdmin?: boolean;
 };
 export type SelectProps = {
   value?: any;

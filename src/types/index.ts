@@ -8,13 +8,15 @@ import { TablerIcon } from '@tabler/icons';
 import { SnackbarProps } from 'types/snackbar';
 import { UserStateProps } from 'types/user';
 import { AdminState } from './admin';
-import { CollectionState } from './collection';
+import { RoomState } from './room';
+import { HotelState } from './hotel';
 
 export interface DefaultRootStateProps {
   snackbar: SnackbarProps;
   user: UserStateProps;
   admin: AdminState;
-  collection: CollectionState;
+  hotel: HotelState;
+  room: RoomState;
 }
 
 export interface ColorProps {

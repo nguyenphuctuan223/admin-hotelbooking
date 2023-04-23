@@ -8,7 +8,7 @@ import { dispatch } from 'store';
 import { AdminFilter, Payload } from 'types/admin';
 
 export const ADMIN_URL = {
-  getUser: `${process.env.REACT_APP_API_URL}admin/users/page`,
+  getUser: `user/findAll`,
   updateUser: `${process.env.REACT_APP_API_URL}users/update-profile`
 };
 
@@ -39,19 +39,13 @@ export default slice.reducer;
 export const { getUserListSuccess } = slice.actions;
 
 export function getAdminList(filter: AdminFilter) {
-  const filters = `${
-    (filter?.search !== '' ? `&search=${filter?.search}` : '') +
-    (filter?.isTrust !== '' ? `&trust=${filter?.isTrust}` : '') +
-    (filter?.isMint !== '' ? `&mint=${filter?.isMint}` : '') +
-    (filter?.isLogin !== '' ? `&login=${filter?.isLogin}` : '')
-  }`;
-
-  const params = `${filter?.currentPage}`;
-
+  const filters = `${filter?.search !== '' ? `&search=${filter?.search}` : ''}`;
   return async () => {
     try {
-      const resp = await axios.get(`${ADMIN_URL.getUser}/${params}?${filters}`);
-      dispatch(slice.actions.getUserListSuccess(resp.data.users));
+      const resp = await axios.get(`${ADMIN_URL.getUser}?${filters}`);
+      console.log('ressp', resp);
+
+      dispatch(slice.actions.getUserListSuccess(resp.data));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }

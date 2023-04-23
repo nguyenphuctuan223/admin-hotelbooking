@@ -1,122 +1,120 @@
+/* eslint-disable no-underscore-dangle */
+import React, { useState } from 'react';
 // THIRD-PARTY
+import { Box, Button, Dialog, DialogContent, Divider, Grid, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  Divider,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography
-} from '@mui/material';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+
+import AnimateButton from 'ui-component/extended/AnimateButton';
+
+import * as yup from 'yup';
+import { useFormik } from 'formik';
 
 // PROJECT IMPORTS
-import AnimateButton from 'ui-component/extended/AnimateButton';
-import { gridSpacing } from 'store/constant';
-// import { useDispatch } from 'store';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-
-import { openSnackbar } from 'store/slices/snackbar';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-
 import { dispatch } from 'store';
-import { Admin, SelectProps } from 'types/admin';
-import { addPerMission, getAdminList } from 'store/slices/admin';
-import { useState } from 'react';
+import { gridSpacing } from 'store/constant';
+import { addAdministrator, editAdministrator, getAdministratorList } from 'store/slices/user';
 
-// const Transition = forwardRef((props: SlideProps, ref) => <Slide direction="left" ref={ref} {...props} />);
+import { Administrator, UserFilter } from 'types/user';
+import { isEmails, isUserName, passwordRegEx } from 'utils/regexHelper';
 
-interface EditAdminProps {
-  admin: Admin;
+interface Props {
   open: boolean;
+  adminFilter: UserFilter;
+  administrator: Administrator;
+  editing?: boolean;
   handleDrawerOpen: () => void;
 }
 
-const initialState = {
-  search: '',
-  isTrust: '',
-  isMint: '',
-  isLogin: '',
-  currentPage: 1,
-  limit: 20
-};
-
-const Status: SelectProps[] = [
-  {
-    value: '1',
-    label: 'True'
-  },
-  {
-    value: '-1',
-    label: 'False'
-  }
-];
-const validationSchema = Yup.object({
-  publicAddress: Yup.string().required('publicAddress is required')
+const validationSchema = yup.object({
+  username: yup
+    .string()
+    .trim()
+    .max(50, `Maximum characters allowed is 50`)
+    .matches(isUserName, 'Enter a valid userName')
+    .required('Username is required'),
+  email: yup
+    .string()
+    .trim()
+    .max(50, `Maximum characters allowed is 50`)
+    .matches(isEmails, 'Email is not valid')
+    .email('Enter a valid email')
+    .required('Email is required'),
+  password: yup.string().trim().matches(passwordRegEx, 'Password cannot include unicode').min(6).max(255).required('Password is required')
 });
 
-const EditAdmin = ({ admin, open, handleDrawerOpen }: EditAdminProps) => {
-  const Notification = (color: string, message: string, severity: string) => {
-    dispatch(
-      openSnackbar({
-        open: true,
-        message,
-        anchorOrigin: { vertical: 'top', horizontal: 'right' },
-        severity,
-        variant: 'alert',
-        alert: {
-          color
-        },
-        close: true
-      })
-    );
+const AddAdministrator = ({ open, editing, handleDrawerOpen, adminFilter, administrator }: Props) => {
+  const [errors, setErrors] = useState<any>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
   };
+  const handleMouseDownPassword = (event: React.SyntheticEvent) => {
+    event.preventDefault();
+  };
+
   const changeModal = (type: string) => {
     if (type === 'close') {
       handleDrawerOpen();
+      setShowPassword(false);
+      setErrors({});
       formik.resetForm();
     }
   };
-  const UpdateUser = (values: Admin) => {
-    dispatch(
-      addPerMission({
-        params: { ...values },
-        callback: (resp) => {
-          if (resp?.data?.status === 'success') {
-            Notification('success', 'Update user successfully!', 'success');
-            dispatch(getAdminList(initialState));
-            changeModal('close');
-          } else {
-            Notification('error', 'Update user Error', 'error');
+
+  const addAdmin = (values: Administrator) => {
+    if (administrator?._id) {
+      dispatch(
+        editAdministrator({
+          id: administrator?._id,
+          params: values,
+          callback: (resp) => {
+            if (resp?.data?.success) {
+              // alertRequestSuccess('Edit administrator successfully!');
+              changeModal('close');
+            } else {
+              console.log('error');
+            }
           }
-        }
-      })
-    );
+        })
+      );
+    } else {
+      dispatch(
+        addAdministrator({
+          params: values,
+          callback: (resp) => {
+            if (resp?.data) {
+              dispatch(getAdministratorList(adminFilter));
+              // alertRequestSuccess('Add administrator successfully!');
+              changeModal('close');
+            } else {
+              console.log('Eroooor');
+
+              // alertError(resp?.errors?.username || resp?.errors?.email || resp?.errors?.phone);
+              // setErrors(resp?.errors);
+            }
+          }
+        })
+      );
+    }
   };
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      publicAddress: admin.publicAddress,
-      is_trust: admin.is_trust,
-      is_login: admin.is_login,
-      is_mint: admin.is_mint
+      id: administrator?._id,
+      username: administrator?.username,
+      email: administrator?.email,
+      password: administrator?.password
     },
     validationSchema,
-    onSubmit: (values: any) => {
-      UpdateUser(values);
+    onSubmit: (values) => {
+      addAdmin(values);
     }
   });
-
   return (
     <Dialog
       open={open}
@@ -140,16 +138,8 @@ const EditAdmin = ({ admin, open, handleDrawerOpen }: EditAdminProps) => {
         <>
           <Box sx={{ p: 3 }}>
             <Grid container alignItems="center" spacing={0.5} justifyContent="space-between">
-              <Grid item sx={{ width: 'calc(100% - 50px)' }}>
+              <Grid item sx={{ width: '100%' }}>
                 <Stack direction="row" spacing={0.5} alignItems="center">
-                  <Button
-                    variant="text"
-                    color="error"
-                    sx={{ p: 0.5, minWidth: 32, display: { xs: 'block', md: 'none' } }}
-                    onClick={handleDrawerOpen}
-                  >
-                    <HighlightOffIcon />
-                  </Button>
                   <Typography
                     variant="h4"
                     sx={{
@@ -161,91 +151,96 @@ const EditAdmin = ({ admin, open, handleDrawerOpen }: EditAdminProps) => {
                       verticalAlign: 'middle'
                     }}
                   >
-                    {`Edit ${admin?.name}`}
+                    {administrator?._id ? `Edit "${administrator?.username}"` : `Add Acount`}
                   </Typography>
+                  <Button
+                    variant="text"
+                    color="error"
+                    sx={{ p: 0.5, minWidth: 32, display: { xs: 'block', md: 'none' } }}
+                    onClick={handleDrawerOpen}
+                  >
+                    <HighlightOffIcon />
+                  </Button>
                 </Stack>
               </Grid>
             </Grid>
           </Box>
           <Divider />
-          <form onSubmit={formik.handleSubmit}>
+          <form noValidate onSubmit={formik.handleSubmit}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DialogContent>
                 <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
                   <Grid item xs={12}>
                     <TextField
-                      id="publicAddress"
-                      name="PublicAddress"
-                      value={formik.values.publicAddress}
-                      // onChange={formik.handleChange}
-                      error={formik.touched.publicAddress && Boolean(formik.errors.publicAddress)}
-                      helperText={formik.touched.publicAddress && formik.errors.publicAddress}
                       fullWidth
-                      label="PublicAddress"
-                      // disabled
+                      id="username"
+                      name="username"
+                      label={
+                        <span>
+                          <span style={{ color: '#f44336' }}>*</span> User Name
+                        </span>
+                      }
+                      // InputProps={{
+                      //   readOnly: !editable
+                      // }}
+                      value={formik.values.username}
+                      onChange={formik.handleChange}
+                      error={formik.touched.username && Boolean(formik.errors.username)}
+                      helperText={formik.touched.username && formik.errors.username}
                     />
                   </Grid>
                   <Grid item xs={12}>
-                    <FormControl fullWidth>
-                      <InputLabel>Is Trust</InputLabel>
-                      <Select
-                        id="is_trust"
-                        name="is_trust"
-                        label="Is Trust"
-                        displayEmpty
-                        value={formik.values.is_trust}
-                        onChange={formik.handleChange}
-                        inputProps={{ 'aria-label': 'Without label' }}
-                      >
-                        {Status.map((status: SelectProps, index: number) => (
-                          <MenuItem key={index} value={status.value}>
-                            {status.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                    <TextField
+                      fullWidth
+                      id="email"
+                      name="email"
+                      label={
+                        <span>
+                          <span style={{ color: '#f44336' }}>*</span> Email
+                        </span>
+                      }
+                      // InputProps={{
+                      //   readOnly: !editable
+                      // }}
+                      value={formik.values.email}
+                      onChange={formik.handleChange}
+                      error={formik.touched.email && Boolean(formik.errors.email)}
+                      helperText={formik.touched.email && formik.errors.email}
+                    />
                   </Grid>
+                  {/* {!administrator._id && ( */}
                   <Grid item xs={12}>
-                    <FormControl fullWidth>
-                      <InputLabel>Is Login</InputLabel>
-                      <Select
-                        id="is_login"
-                        name="is_login"
-                        label="Is Login"
-                        displayEmpty
-                        value={formik.values.is_login}
-                        onChange={formik.handleChange}
-                        inputProps={{ 'aria-label': 'Without label' }}
-                      >
-                        {Status.map((status: SelectProps, index: number) => (
-                          <MenuItem key={index} value={status.value}>
-                            {status.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                    <TextField
+                      fullWidth
+                      id="password"
+                      name="password"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={handleClickShowPassword}
+                              onMouseDown={handleMouseDownPassword}
+                              edge="end"
+                            >
+                              {showPassword ? <Visibility /> : <VisibilityOff />}
+                            </IconButton>
+                          </InputAdornment>
+                        )
+                      }}
+                      type={showPassword ? 'text' : 'password'}
+                      label={
+                        <span>
+                          <span style={{ color: '#f44336' }}>*</span> Password
+                        </span>
+                      }
+                      value={formik.values.password}
+                      onChange={formik.handleChange}
+                      error={(formik.touched.password && Boolean(formik.errors.password)) || errors?.password}
+                      helperText={(formik.touched.password && formik.errors.password) || errors?.password}
+                    />
                   </Grid>
-
-                  <Grid item xs={12}>
-                    <FormControl fullWidth>
-                      <InputLabel>Is Mint</InputLabel>
-                      <Select
-                        id="is_mint"
-                        name="is_mint"
-                        label="Is Mint"
-                        displayEmpty
-                        value={formik.values.is_mint}
-                        onChange={formik.handleChange}
-                        inputProps={{ 'aria-label': 'Without label' }}
-                      >
-                        {Status.map((status: SelectProps, index: number) => (
-                          <MenuItem key={index} value={status.value}>
-                            {status.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid>
+                  {/* )} */}
                   <Grid item xs={12}>
                     <AnimateButton>
                       <Button fullWidth variant="contained" type="submit">
@@ -263,4 +258,4 @@ const EditAdmin = ({ admin, open, handleDrawerOpen }: EditAdminProps) => {
   );
 };
 
-export default EditAdmin;
+export default AddAdministrator;

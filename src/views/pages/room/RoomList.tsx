@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // THIRD-PARTY
 import { ButtonBase, Chip, IconButton, Menu, MenuItem, Stack, TableCell, TableRow, Typography, useTheme } from '@mui/material';
 
@@ -6,33 +6,58 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MoreVertTwoToneIcon from '@mui/icons-material/MoreVertTwoTone';
 
-import moment from 'moment';
-
 // PROJECT IMPORTS
-import { dispatch, useSelector } from 'store';
-// import { deleteAdministrator } from 'store/slices/user';
+import { dispatch } from 'store';
 
-import { UserFilter } from 'types/user';
-import { UserProfile } from 'types/user-profile';
-import AddAdministrator from './EditAdmin';
+import AlertDelete from 'ui-component/Alert/AlertDelete';
+import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
+import { Room, RoomFilter } from 'types/room';
+import { delRoom } from 'store/slices/room';
+import AddOrEditRoom from './EditorAddRoom';
+import { getDetailHotel } from 'store/slices/hotel';
 
 // import AlertDelete from 'ui-component/Alert/AlertDelete';
 // import { alertError, alertRequestSuccess } from 'utils/helpers/axios/errorAlert';
 
 interface Props {
-  administrator: UserProfile;
+  room: Room;
+  roomFilter: RoomFilter;
   index: number;
-  adminFilter: UserFilter;
-  getListAfterDelete?: () => void;
+  getListAfterDelete: () => void;
 }
 
-const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }: Props) => {
+const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
   const theme = useTheme();
-  const administratorState = useSelector((state) => state.user);
   const [editing, setEditing] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState(false);
-  const [openAdministratorDrawer, setOpenAdministratorDrawer] = useState<boolean>(false);
+  const [openroomDrawer, setOpenroomDrawer] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<Element | ((element: Element) => Element) | null | undefined>(null);
+
+  const [dataHotel, setDataHotel] = useState<string>('');
+
+  console.log('123', dataHotel);
+
+  const getOneHotel = () => {
+    dispatch(
+      getDetailHotel({
+        // eslint-disable-next-line no-underscore-dangle
+        id: room.hotel,
+        callback: (resp) => {
+          if (resp?.status === 200) {
+            setDataHotel(resp?.data?.name);
+            alertRequestSuccess('get successfully!');
+          } else {
+            alertRequestFailure(resp?.message);
+          }
+        }
+      })
+    );
+  };
+  useEffect(() => {
+    if (room?.hotel) {
+      getOneHotel();
+    }
+  }, []);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -42,33 +67,32 @@ const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }
     setAnchorEl(event?.currentTarget);
   };
 
-  const handleAdministratorDrawerOpen = async () => {
+  const handleroomDrawerOpen = async () => {
     await setEditing(false);
-    setOpenAdministratorDrawer((prevState) => !prevState);
+    setOpenroomDrawer((prevState) => !prevState);
   };
 
-  const editAdministrator = async () => {
+  const editRoom = async () => {
     await setEditing(true);
-    setOpenAdministratorDrawer((prevState) => !prevState);
+    setOpenroomDrawer((prevState) => !prevState);
   };
 
-  const handleModalClose = (status: boolean) => {
+  const handleModalClose = () => {
     setOpenModal(false);
-    // if (status) {
-    //   dispatch(
-    //     deleteAdministrator({
-    //       id: administrator.id,
-    //       callback: (resp) => {
-    //         if (resp?.data?.success) {
-    //           getListAfterDelete();
-    //           alertRequestSuccess('Deleted successfully!');
-    //         } else {
-    //           alertError(resp?.message);
-    //         }
-    //       }
-    //     })
-    //   );
-    // }
+    dispatch(
+      delRoom({
+        // eslint-disable-next-line no-underscore-dangle
+        id: room._id,
+        callback: (resp) => {
+          if (resp?.data) {
+            getListAfterDelete();
+            alertRequestSuccess('Deleted successfully!');
+          } else {
+            alertRequestFailure(resp?.message);
+          }
+        }
+      })
+    );
   };
   return (
     <>
@@ -78,13 +102,13 @@ const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }
             <Typography variant="body2">{index + 1}</Typography>
           </Stack>
         </TableCell>
-        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '200px' }}>{administrator.username}</TableCell>
-        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{administrator.email}</TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '200px' }}>{room.name}</TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{dataHotel}</TableCell>
         <TableCell component="th" scope="row">
-          {moment(administrator.created_at).format('DD/MM/YYYY HH:mm')}
+          {room.description}
         </TableCell>
         <TableCell component="th" scope="row">
-          {moment(administrator.updated_at).format('DD/MM/YYYY HH:mm')}
+          {room.price}
         </TableCell>
 
         <TableCell align="center">
@@ -118,7 +142,7 @@ const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }
             <MenuItem
               onClick={() => {
                 handleClose();
-                editAdministrator();
+                editRoom();
               }}
             >
               <EditIcon fontSize="small" sx={{ color: '#2196f3', mr: 1 }} />
@@ -134,17 +158,11 @@ const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }
               Delete
             </MenuItem>
           </Menu>
-          {/* {openModal && <AlertDelete name={administrator.name} open={openModal} handleClose={handleModalClose} />} */}
+          {openModal && <AlertDelete name={room.name} open={openModal} handleClose={handleModalClose} />}
         </TableCell>
       </TableRow>
-      <AddAdministrator
-        editing={editing}
-        administrator={administrator}
-        adminFilter={adminFilter}
-        open={openAdministratorDrawer}
-        handleDrawerOpen={handleAdministratorDrawerOpen}
-      />
+      <AddOrEditRoom editing={editing} room={room} roomFilter={roomFilter} open={openroomDrawer} handleDrawerOpen={handleroomDrawerOpen} />
     </>
   );
 };
-export default Administrator;
+export default RoomList;

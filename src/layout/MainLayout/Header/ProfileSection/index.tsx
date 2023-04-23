@@ -40,6 +40,7 @@ const ProfileSection = () => {
   const handleLogout = async () => {
     try {
       await logout();
+      // navigate('/login');
     } catch (err) {
       console.error(err);
     }

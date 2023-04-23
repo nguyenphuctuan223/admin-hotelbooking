@@ -1,12 +1,15 @@
 // THIRD-PARTY
 import { FormattedMessage } from 'react-intl';
 // import { IconUserCheck } from '@tabler/icons';
-import CollectionsIcon from '@mui/icons-material/Collections';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+
+import HotelIcon from '@mui/icons-material/Hotel';
 
 import SettingsIcon from '@mui/icons-material/Settings';
 
-const icons = { ManageAccountsIcon, CollectionsIcon, SettingsIcon };
+import BedroomChildIcon from '@mui/icons-material/BedroomChild';
+
+const icons = { ManageAccountsIcon, HotelIcon, SettingsIcon, BedroomChildIcon };
 
 const application = {
   id: 'application',
@@ -22,11 +25,19 @@ const application = {
       breadcrumbs: true
     },
     {
-      id: 'manage-Collections',
-      title: <FormattedMessage id="collection" />,
+      id: 'manage-hotels',
+      title: <FormattedMessage id="hotel" />,
       type: 'item',
-      url: '/collection',
-      icon: icons.CollectionsIcon,
+      url: '/hotel',
+      icon: icons.HotelIcon,
+      breadcrumbs: true
+    },
+    {
+      id: 'manage-rooms',
+      title: <FormattedMessage id="room" />,
+      type: 'item',
+      url: '/room',
+      icon: icons.BedroomChildIcon,
       breadcrumbs: true
     }
   ]

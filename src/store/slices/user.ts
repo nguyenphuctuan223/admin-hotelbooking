@@ -1,4 +1,4 @@
-import { Administrator, UserFilter } from '../../types/user';
+import { Administrator, Payload, UserFilter } from '../../types/user';
 // THIRD-PARTY
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -9,11 +9,11 @@ import { dispatch } from 'store';
 import { UserProfile } from 'types/user-profile';
 
 export const ADMINISTRATOR_URL = {
-  getAdmin: `${process.env.REACT_APP_API_URL}/v1/operator/users`,
-  postAdmin: `${process.env.REACT_APP_API_URL}/v1/operator/users`,
-  putAdmin: (user: UserProfile) => `${process.env.REACT_APP_API_URL}/v1/operator/users/${user.id}`,
-  detailAdmin: (user: UserProfile) => `${process.env.REACT_APP_API_URL}/v1/operator/users/${user.id}`,
-  delAdmin: (user: UserProfile) => `${process.env.REACT_APP_API_URL}/v1/operator/users/${user.id}`
+  getAdmin: `user/findAll`,
+  postAdmin: `auth/register`,
+  putAdmin: (id: any) => `user/${id}`,
+  detailAdmin: (id: any) => `users/find/${id}`,
+  delAdmin: (id: any) => `user/${id}`
 };
 
 const initialState: DefaultRootStateProps['user'] = {
@@ -62,29 +62,45 @@ export function getAdministratorList(filter?: UserFilter) {
   return async () => {
     try {
       const resp = await axios.get(`${ADMINISTRATOR_URL.getAdmin}?${params}`);
-      dispatch(slice.actions.getAdministratorListSuccess(resp.data.success.data));
+      dispatch(slice.actions.getAdministratorListSuccess(resp.data));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
   };
 }
-export function postAdministrator(user: Administrator) {
+export function addAdministrator(payload: Payload) {
   return async () => {
-    try {
-      const resp = await axios.post(`${ADMINISTRATOR_URL.postAdmin}`, user);
-      dispatch(slice.actions.postAdministratorSuccess(resp.data.success));
-    } catch (error) {
-      dispatch(slice.actions.hasError(error));
+    const { params, callback } = payload;
+    const resp = await axios
+      .post(ADMINISTRATOR_URL.postAdmin, params)
+      .then((result) => {
+        dispatch(slice.actions.postAdministratorSuccess(result.data));
+        return result;
+      })
+      .catch((error) => {
+        dispatch(slice.actions.hasError(error));
+        return error;
+      });
+    if (callback) {
+      callback(resp);
     }
   };
 }
-export function putAdministrator(user: Administrator) {
+export function editAdministrator(payload: Payload) {
   return async () => {
-    try {
-      const resp = await axios.put(`${process.env.REACT_APP_API_URL}/v1/operator/users/${user.id}`, user);
-      dispatch(slice.actions.putAdministratorSuccess(resp.data.success.data));
-    } catch (error) {
-      dispatch(slice.actions.hasError(error));
+    const { id, params, callback } = payload;
+    const resp = await axios
+      .put(ADMINISTRATOR_URL.putAdmin(id), params)
+      .then((result) => {
+        dispatch(slice.actions.putAdministratorSuccess(result.data));
+        return result;
+      })
+      .catch((error) => {
+        dispatch(slice.actions.hasError(error));
+        return error;
+      });
+    if (callback) {
+      callback(resp);
     }
   };
 }

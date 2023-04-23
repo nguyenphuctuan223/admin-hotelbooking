@@ -9,7 +9,8 @@ import AuthGuard from 'utils/route-guard/AuthGuard';
 const Dashboard = Loadable(lazy(() => import('views/dashboard')));
 const Profile = Loadable(lazy(() => import('views/pages/account')));
 const Admin = Loadable(lazy(() => import('views/pages/admin')));
-const Collection = Loadable(lazy(() => import('views/pages/collection')));
+const Hotel = Loadable(lazy(() => import('views/pages/hotel')));
+const Room = Loadable(lazy(() => import('views/pages/room')));
 
 const MainRoutes = {
   path: '/',
@@ -28,8 +29,12 @@ const MainRoutes = {
       element: <Admin />
     },
     {
-      path: '/collection',
-      element: <Collection />
+      path: '/hotel',
+      element: <Hotel />
+    },
+    {
+      path: '/room',
+      element: <Room />
     },
     {
       path: '/setting',

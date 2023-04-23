@@ -6,32 +6,30 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MoreVertTwoToneIcon from '@mui/icons-material/MoreVertTwoTone';
 
-import moment from 'moment';
-
 // PROJECT IMPORTS
 import { dispatch, useSelector } from 'store';
-// import { deleteAdministrator } from 'store/slices/user';
 
-import { UserFilter } from 'types/user';
-import { UserProfile } from 'types/user-profile';
-import AddAdministrator from './EditAdmin';
+import AddHotel from './EditorAddHotel';
+import { Hotel, HotelFilter } from 'types/hotel';
+import AlertDelete from 'ui-component/Alert/AlertDelete';
+import { delHotel } from 'store/slices/hotel';
+import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
 
 // import AlertDelete from 'ui-component/Alert/AlertDelete';
 // import { alertError, alertRequestSuccess } from 'utils/helpers/axios/errorAlert';
 
 interface Props {
-  administrator: UserProfile;
+  hotel: Hotel;
+  hotelFilter: HotelFilter;
   index: number;
-  adminFilter: UserFilter;
-  getListAfterDelete?: () => void;
+  getListAfterDelete: () => void;
 }
 
-const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }: Props) => {
+const HotelList = ({ hotel, index, hotelFilter, getListAfterDelete }: Props) => {
   const theme = useTheme();
-  const administratorState = useSelector((state) => state.user);
   const [editing, setEditing] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState(false);
-  const [openAdministratorDrawer, setOpenAdministratorDrawer] = useState<boolean>(false);
+  const [openhotelDrawer, setOpenhotelDrawer] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<Element | ((element: Element) => Element) | null | undefined>(null);
 
   const handleClose = () => {
@@ -42,33 +40,32 @@ const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }
     setAnchorEl(event?.currentTarget);
   };
 
-  const handleAdministratorDrawerOpen = async () => {
+  const handlehotelDrawerOpen = async () => {
     await setEditing(false);
-    setOpenAdministratorDrawer((prevState) => !prevState);
+    setOpenhotelDrawer((prevState) => !prevState);
   };
 
-  const editAdministrator = async () => {
+  const edithotel = async () => {
     await setEditing(true);
-    setOpenAdministratorDrawer((prevState) => !prevState);
+    setOpenhotelDrawer((prevState) => !prevState);
   };
 
-  const handleModalClose = (status: boolean) => {
+  const handleModalClose = () => {
     setOpenModal(false);
-    // if (status) {
-    //   dispatch(
-    //     deleteAdministrator({
-    //       id: administrator.id,
-    //       callback: (resp) => {
-    //         if (resp?.data?.success) {
-    //           getListAfterDelete();
-    //           alertRequestSuccess('Deleted successfully!');
-    //         } else {
-    //           alertError(resp?.message);
-    //         }
-    //       }
-    //     })
-    //   );
-    // }
+    dispatch(
+      delHotel({
+        // eslint-disable-next-line no-underscore-dangle
+        id: hotel._id,
+        callback: (resp) => {
+          if (resp?.data) {
+            getListAfterDelete();
+            alertRequestSuccess('Deleted successfully!');
+          } else {
+            alertRequestFailure(resp?.message);
+          }
+        }
+      })
+    );
   };
   return (
     <>
@@ -78,13 +75,13 @@ const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }
             <Typography variant="body2">{index + 1}</Typography>
           </Stack>
         </TableCell>
-        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '200px' }}>{administrator.username}</TableCell>
-        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{administrator.email}</TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '200px' }}>{hotel.name}</TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{hotel.address}</TableCell>
         <TableCell component="th" scope="row">
-          {moment(administrator.created_at).format('DD/MM/YYYY HH:mm')}
+          {hotel.description}
         </TableCell>
         <TableCell component="th" scope="row">
-          {moment(administrator.updated_at).format('DD/MM/YYYY HH:mm')}
+          {hotel.area}
         </TableCell>
 
         <TableCell align="center">
@@ -118,7 +115,7 @@ const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }
             <MenuItem
               onClick={() => {
                 handleClose();
-                editAdministrator();
+                edithotel();
               }}
             >
               <EditIcon fontSize="small" sx={{ color: '#2196f3', mr: 1 }} />
@@ -134,17 +131,11 @@ const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }
               Delete
             </MenuItem>
           </Menu>
-          {/* {openModal && <AlertDelete name={administrator.name} open={openModal} handleClose={handleModalClose} />} */}
+          {openModal && <AlertDelete name={hotel.name} open={openModal} handleClose={handleModalClose} />}
         </TableCell>
       </TableRow>
-      <AddAdministrator
-        editing={editing}
-        administrator={administrator}
-        adminFilter={adminFilter}
-        open={openAdministratorDrawer}
-        handleDrawerOpen={handleAdministratorDrawerOpen}
-      />
+      <AddHotel editing={editing} hotel={hotel} hotelFilter={hotelFilter} open={openhotelDrawer} handleDrawerOpen={handlehotelDrawerOpen} />
     </>
   );
 };
-export default Administrator;
+export default HotelList;

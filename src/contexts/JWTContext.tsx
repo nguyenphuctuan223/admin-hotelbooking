@@ -11,7 +11,7 @@ import { InitialLoginContextProps, JWTContextType } from 'types/auth';
 import { LOGIN, LOGOUT } from 'store/actions';
 import { openSnackbar } from 'store/slices/snackbar';
 
-export const LOGIN_URL = `${process.env.REACT_APP_API_URL}admin/auth/login`;
+export const LOGIN_URL = `/auth/login`;
 export const ME_URL = `${process.env.REACT_APP_API_URL}/v1/me`;
 
 const initialState: InitialLoginContextProps = {
@@ -28,10 +28,11 @@ const initialState: InitialLoginContextProps = {
 //   return decoded.exp > Date.now() / 1000;
 // };
 
-const setSession = (serviceToken?: string | null) => {
-  if (serviceToken) {
-    localStorage.setItem('access_token', serviceToken);
-    axios.defaults.headers.common.Authorization = `Bearer ${serviceToken}`;
+const setSession = (accessToken?: string | null) => {
+  if (accessToken) {
+    localStorage.setItem('access_token', accessToken);
+    axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+    axios.defaults.headers.common.token = `Bearer ${accessToken}`;
   } else {
     localStorage.removeItem('access_token');
     delete axios.defaults.headers.common.Authorization;
@@ -74,11 +75,12 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
     return <Loader />;
   }
 
-  const login = async (email: string, password: string) => {
-    const response = await axios.post(LOGIN_URL, { email, password });
+  const login = async (username: string, password: string) => {
+    const response = await axios.post(LOGIN_URL, { username, password });
+
     try {
-      const { access_token } = response.data;
-      setSession(access_token);
+      const { accessToken } = response.data;
+      setSession(accessToken);
       dispatch({
         type: LOGIN,
         payload: {
