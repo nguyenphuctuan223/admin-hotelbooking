@@ -43,7 +43,6 @@ const HoteIndex = () => {
   const dispatch = useDispatch();
   const hotelState = useSelector((state) => state?.hotel);
   const menuState = useSelector((state) => state?.menu);
-  console.log('hotelState', hotelState);
 
   const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
   const matchDownMD = useMediaQuery(theme.breakpoints.down('lg'));
@@ -80,7 +79,7 @@ const HoteIndex = () => {
 
   useEffect(() => {
     setData(hotelState?.hotels);
-  }, [hotelState]);
+  }, [hotelState?.hotels]);
 
   useEffect(() => {
     getListHotel();
@@ -158,9 +157,10 @@ const HoteIndex = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.map((hotel, index) => (
-              <HotelList key={hotel._id} hotel={hotel} index={index} hotelFilter={hotelFilter} getListAfterDelete={getListAfterDelete} />
-            ))}
+            {data &&
+              data?.map((hotel, index) => (
+                <HotelList key={hotel._id} hotel={hotel} index={index} hotelFilter={hotelFilter} getListAfterDelete={getListAfterDelete} />
+              ))}
           </TableBody>
         </Table>
         <AddHotel editing open={openDrawer} handleDrawerOpen={handleDrawerOpen} hotelFilter={hotelFilter} hotel={{}} />

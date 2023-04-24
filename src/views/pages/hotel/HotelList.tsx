@@ -55,7 +55,7 @@ const HotelList = ({ hotel, index, hotelFilter, getListAfterDelete }: Props) => 
     dispatch(
       delHotel({
         // eslint-disable-next-line no-underscore-dangle
-        id: hotel._id,
+        id: hotel?._id,
         callback: (resp) => {
           if (resp?.data) {
             getListAfterDelete();

@@ -14,7 +14,7 @@ import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
 import { Room, RoomFilter } from 'types/room';
 import { delRoom } from 'store/slices/room';
 import AddOrEditRoom from './EditorAddRoom';
-import { getDetailHotel } from 'store/slices/hotel';
+import { getDetailHotel, getHotelList } from 'store/slices/hotel';
 
 // import AlertDelete from 'ui-component/Alert/AlertDelete';
 // import { alertError, alertRequestSuccess } from 'utils/helpers/axios/errorAlert';
@@ -35,17 +35,18 @@ const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
 
   const [dataHotel, setDataHotel] = useState<string>('');
 
-  console.log('123', dataHotel);
+  const getListHotel = async () => {
+    await dispatch(getHotelList());
+  };
 
   const getOneHotel = () => {
     dispatch(
       getDetailHotel({
         // eslint-disable-next-line no-underscore-dangle
-        id: room.hotel,
+        id: room?.hotel,
         callback: (resp) => {
           if (resp?.status === 200) {
             setDataHotel(resp?.data?.name);
-            alertRequestSuccess('get successfully!');
           } else {
             alertRequestFailure(resp?.message);
           }
@@ -54,10 +55,14 @@ const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
     );
   };
   useEffect(() => {
+    getListHotel();
+  }, []);
+  useEffect(() => {
     if (room?.hotel) {
       getOneHotel();
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [room?.hotel]);
 
   const handleClose = () => {
     setAnchorEl(null);

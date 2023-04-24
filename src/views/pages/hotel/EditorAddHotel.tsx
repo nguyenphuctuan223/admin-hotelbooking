@@ -89,7 +89,7 @@ const AddHotel = ({ open, editing, handleDrawerOpen, hotelFilter, hotel }: Props
         addHotel({
           params: values,
           callback: (resp) => {
-            if (resp?.data) {
+            if (resp?.status === 200) {
               dispatch(getHotelList(hotelFilter));
               alertRequestSuccess('Add hotel successfully!');
               changeModal('close');

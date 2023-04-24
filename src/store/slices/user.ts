@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { Administrator, Payload, UserFilter } from '../../types/user';
 // THIRD-PARTY
 import { createSlice } from '@reduxjs/toolkit';
@@ -41,14 +42,14 @@ const slice = createSlice({
     },
     putAdministratorSuccess(state, action) {
       state.users = state.users.map((user) => {
-        if (user.id === action.payload.id) {
+        if (user._id === action.payload.id) {
           return action.payload;
         }
         return user;
       });
     },
     delAdministratorSuccess(state, action) {
-      state.users = state.users.filter((user) => user.id !== action.payload.id);
+      state.users = state.users.filter((user) => user._id !== action.payload.id);
     }
   }
 });
@@ -56,9 +57,7 @@ const slice = createSlice({
 export default slice.reducer;
 
 export function getAdministratorList(filter?: UserFilter) {
-  const params = `${
-    (filter?.search !== '' ? `&search=${filter?.search}` : '') + (filter?.status !== '' ? `&status=${filter?.status}` : '')
-  }&page=${filter?.currentPage}`;
+  const params = `${filter?.search !== '' ? `&search=${filter?.search}` : ''}&page=${filter?.currentPage}`;
   return async () => {
     try {
       const resp = await axios.get(`${ADMINISTRATOR_URL.getAdmin}?${params}`);
@@ -105,11 +104,15 @@ export function editAdministrator(payload: Payload) {
   };
 }
 
-export function delAdministrator(user: UserProfile) {
+export function delAdministrator(payload: Payload) {
+  const { id, callback } = payload;
   return async () => {
     try {
-      const resp = await axios.delete(`${process.env.REACT_APP_API_URL}/v1/operator/users/${user.id}`);
+      const resp = await axios.delete(ADMINISTRATOR_URL.delAdmin(id));
       dispatch(slice.actions.delAdministratorSuccess(resp.data.success.data));
+      if (callback) {
+        callback(resp);
+      }
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
