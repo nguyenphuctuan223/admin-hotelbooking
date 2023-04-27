@@ -18,5 +18,7 @@
   "user": "User",
   "hotel": "Hotel",
   "room": "Room",
+  "booking": "Booking",
+  "trast": "Transportation",
   "setting": "Setting"
 }

@@ -9,26 +9,23 @@ import MoreVertTwoToneIcon from '@mui/icons-material/MoreVertTwoTone';
 // PROJECT IMPORTS
 import { dispatch } from 'store';
 
-import AddHotel from './EditorAddHotel';
-import { Hotel, HotelFilter } from 'types/hotel';
 import AlertDelete from 'ui-component/Alert/AlertDelete';
-import { delHotel } from 'store/slices/hotel';
 import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
-
-// import AlertDelete from 'ui-component/Alert/AlertDelete';
-// import { alertError, alertRequestSuccess } from 'utils/helpers/axios/errorAlert';
+import { Transt, TranstFilter } from 'types/transport';
+import AddOrEditTranst from './EditorAddTranst';
+import { delTranst } from 'store/slices/transt';
 
 interface Props {
-  hotel: Hotel;
-  hotelFilter: HotelFilter;
+  transt: Transt;
+  transtFilter: TranstFilter;
   index: number;
   getListAfterDelete: () => void;
 }
 
-const HotelList = ({ hotel, index, hotelFilter, getListAfterDelete }: Props) => {
+const TranstList = ({ transt, index, transtFilter, getListAfterDelete }: Props) => {
   const [editing, setEditing] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState(false);
-  const [openhotelDrawer, setOpenhotelDrawer] = useState<boolean>(false);
+  const [openTranstDrawer, setOpenTranstDrawer] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<Element | ((element: Element) => Element) | null | undefined>(null);
 
   const handleClose = () => {
@@ -39,22 +36,22 @@ const HotelList = ({ hotel, index, hotelFilter, getListAfterDelete }: Props) => 
     setAnchorEl(event?.currentTarget);
   };
 
-  const handlehotelDrawerOpen = async () => {
+  const handleTranstDrawerOpen = async () => {
     await setEditing(false);
-    setOpenhotelDrawer((prevState) => !prevState);
+    setOpenTranstDrawer((prevState) => !prevState);
   };
 
-  const edithotel = async () => {
+  const updateTranst = async () => {
     await setEditing(true);
-    setOpenhotelDrawer((prevState) => !prevState);
+    setOpenTranstDrawer((prevState) => !prevState);
   };
 
   const handleModalClose = () => {
     setOpenModal(false);
     dispatch(
-      delHotel({
+      delTranst({
         // eslint-disable-next-line no-underscore-dangle
-        id: hotel?._id,
+        id: transt._id,
         callback: (resp) => {
           if (resp?.data) {
             getListAfterDelete();
@@ -74,14 +71,8 @@ const HotelList = ({ hotel, index, hotelFilter, getListAfterDelete }: Props) => 
             <Typography variant="body2">{index + 1}</Typography>
           </Stack>
         </TableCell>
-        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '200px' }}>{hotel.name}</TableCell>
-        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{hotel.address}</TableCell>
-        <TableCell component="th" scope="row">
-          {hotel.description}
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {hotel.area}
-        </TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '200px' }}>{transt.type}</TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{transt.price}</TableCell>
 
         <TableCell align="center">
           <ButtonBase
@@ -114,7 +105,7 @@ const HotelList = ({ hotel, index, hotelFilter, getListAfterDelete }: Props) => 
             <MenuItem
               onClick={() => {
                 handleClose();
-                edithotel();
+                updateTranst();
               }}
             >
               <EditIcon fontSize="small" sx={{ color: '#2196f3', mr: 1 }} />
@@ -130,11 +121,17 @@ const HotelList = ({ hotel, index, hotelFilter, getListAfterDelete }: Props) => 
               Delete
             </MenuItem>
           </Menu>
-          {openModal && <AlertDelete name={hotel.name} open={openModal} handleClose={handleModalClose} />}
+          {openModal && <AlertDelete name={transt.type} open={openModal} handleClose={handleModalClose} />}
         </TableCell>
       </TableRow>
-      <AddHotel editing={editing} hotel={hotel} hotelFilter={hotelFilter} open={openhotelDrawer} handleDrawerOpen={handlehotelDrawerOpen} />
+      <AddOrEditTranst
+        editing={editing}
+        transt={transt}
+        transtFilter={transtFilter}
+        open={openTranstDrawer}
+        handleDrawerOpen={handleTranstDrawerOpen}
+      />
     </>
   );
 };
-export default HotelList;
+export default TranstList;

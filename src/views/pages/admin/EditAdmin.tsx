@@ -20,7 +20,8 @@ import { gridSpacing } from 'store/constant';
 import { addAdministrator, editAdministrator, getAdministratorList } from 'store/slices/user';
 
 import { Administrator, UserFilter } from 'types/user';
-import { isEmails, isUserName, passwordRegEx } from 'utils/regexHelper';
+import { isEmails, isUserName } from 'utils/regexHelper';
+import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
 
 interface Props {
   open: boolean;
@@ -43,8 +44,7 @@ const validationSchema = yup.object({
     .max(50, `Maximum characters allowed is 50`)
     .matches(isEmails, 'Email is not valid')
     .email('Enter a valid email')
-    .required('Email is required'),
-  password: yup.string().trim().matches(passwordRegEx, 'Password cannot include unicode').min(6).max(255).required('Password is required')
+    .required('Email is required')
 });
 
 const AddAdministrator = ({ open, editing, handleDrawerOpen, adminFilter, administrator }: Props) => {
@@ -60,7 +60,6 @@ const AddAdministrator = ({ open, editing, handleDrawerOpen, adminFilter, admini
   const changeModal = (type: string) => {
     if (type === 'close') {
       handleDrawerOpen();
-      setShowPassword(false);
       setErrors({});
       formik.resetForm();
     }
@@ -73,11 +72,12 @@ const AddAdministrator = ({ open, editing, handleDrawerOpen, adminFilter, admini
           id: administrator?._id,
           params: values,
           callback: (resp) => {
-            if (resp?.data?.success) {
-              // alertRequestSuccess('Edit administrator successfully!');
+            if (resp?.status === 200) {
+              dispatch(getAdministratorList(adminFilter));
+              alertRequestSuccess('Edit account successfully!');
               changeModal('close');
             } else {
-              console.log('error');
+              alertRequestFailure(resp?.message);
             }
           }
         })
@@ -87,15 +87,12 @@ const AddAdministrator = ({ open, editing, handleDrawerOpen, adminFilter, admini
         addAdministrator({
           params: values,
           callback: (resp) => {
-            if (resp?.data) {
+            if (resp?.status === 201) {
               dispatch(getAdministratorList(adminFilter));
-              // alertRequestSuccess('Add administrator successfully!');
+              alertRequestSuccess('Add account successfully!');
               changeModal('close');
             } else {
-              console.log('Eroooor');
-
-              // alertError(resp?.errors?.username || resp?.errors?.email || resp?.errors?.phone);
-              // setErrors(resp?.errors);
+              alertRequestFailure(resp?.message);
             }
           }
         })
@@ -108,7 +105,7 @@ const AddAdministrator = ({ open, editing, handleDrawerOpen, adminFilter, admini
       id: administrator?._id,
       username: administrator?.username,
       email: administrator?.email,
-      password: administrator?.password
+      password: ''
     },
     validationSchema,
     onSubmit: (values) => {
@@ -208,39 +205,39 @@ const AddAdministrator = ({ open, editing, handleDrawerOpen, adminFilter, admini
                       helperText={formik.touched.email && formik.errors.email}
                     />
                   </Grid>
-                  {/* {!administrator._id && ( */}
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      id="password"
-                      name="password"
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              aria-label="toggle password visibility"
-                              onClick={handleClickShowPassword}
-                              onMouseDown={handleMouseDownPassword}
-                              edge="end"
-                            >
-                              {showPassword ? <Visibility /> : <VisibilityOff />}
-                            </IconButton>
-                          </InputAdornment>
-                        )
-                      }}
-                      type={showPassword ? 'text' : 'password'}
-                      label={
-                        <span>
-                          <span style={{ color: '#f44336' }}>*</span> Password
-                        </span>
-                      }
-                      value={formik.values.password}
-                      onChange={formik.handleChange}
-                      error={(formik.touched.password && Boolean(formik.errors.password)) || errors?.password}
-                      helperText={(formik.touched.password && formik.errors.password) || errors?.password}
-                    />
-                  </Grid>
-                  {/* )} */}
+                  {!administrator._id && (
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        id="password"
+                        name="password"
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowPassword}
+                                onMouseDown={handleMouseDownPassword}
+                                edge="end"
+                              >
+                                {showPassword ? <Visibility /> : <VisibilityOff />}
+                              </IconButton>
+                            </InputAdornment>
+                          )
+                        }}
+                        type={showPassword ? 'text' : 'password'}
+                        label={
+                          <span>
+                            <span style={{ color: '#f44336' }}>*</span> Password
+                          </span>
+                        }
+                        value={formik.values.password}
+                        onChange={formik.handleChange}
+                        error={(formik.touched.password && Boolean(formik.errors.password)) || errors?.password}
+                        helperText={(formik.touched.password && formik.errors.password) || errors?.password}
+                      />
+                    </Grid>
+                  )}
                   <Grid item xs={12}>
                     <AnimateButton>
                       <Button fullWidth variant="contained" type="submit">

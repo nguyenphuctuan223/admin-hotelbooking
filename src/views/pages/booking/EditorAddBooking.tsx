@@ -1,21 +1,6 @@
 /* eslint-disable no-underscore-dangle */
-import React from 'react';
 // THIRD-PARTY
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  Divider,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography
-} from '@mui/material';
+import { Box, Button, Dialog, DialogContent, Divider, Grid, Stack, TextField, Typography } from '@mui/material';
 
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
@@ -27,28 +12,26 @@ import * as yup from 'yup';
 import { useFormik } from 'formik';
 
 // PROJECT IMPORTS
-import { dispatch, useSelector } from 'store';
+import { dispatch } from 'store';
 import { gridSpacing } from 'store/constant';
 
 import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
-import { Room, RoomFilter } from 'types/room';
-import { addRoom, editRoom, getRoomList } from 'store/slices/room';
+import { Booking, BookingFilter } from 'types/booking';
+import { addBooking, editBooking, getBookingList } from 'store/slices/booking';
 
 interface Props {
   open: boolean;
-  room: Room;
-  roomFilter: RoomFilter;
+  booking: Booking;
+  bookingFilter: BookingFilter;
   editing?: boolean;
   handleDrawerOpen: () => void;
 }
 
 const validationSchema = yup.object({
-  name: yup.string().trim().max(50, `Maximum characters allowed is 50`).required('Name is required')
+  email: yup.string().trim().max(50, `Maximum characters allowed is 50`).required('Name is required')
 });
 
-const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Props) => {
-  const hotelState = useSelector((state) => state.hotel);
-
+const AddOrEditBooking = ({ open, editing, handleDrawerOpen, bookingFilter, booking }: Props) => {
   const changeModal = (type: string) => {
     if (type === 'close') {
       handleDrawerOpen();
@@ -56,16 +39,16 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
     }
   };
 
-  const HandleSubmit = (values: Room) => {
-    if (room?._id) {
+  const HandleSubmit = (values: Booking) => {
+    if (booking?._id) {
       dispatch(
-        editRoom({
-          id: room?._id,
+        editBooking({
+          id: booking?._id,
           params: values,
           callback: (resp) => {
             if (resp?.status === 200) {
-              dispatch(getRoomList(roomFilter));
-              alertRequestSuccess('Edit room successfully!');
+              dispatch(getBookingList(bookingFilter));
+              alertRequestSuccess('Edit booking successfully!');
               changeModal('close');
             } else {
               alertRequestFailure(resp?.message);
@@ -75,12 +58,12 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
       );
     } else {
       dispatch(
-        addRoom({
+        addBooking({
           params: values,
           callback: (resp) => {
             if (resp?.status === 200) {
-              dispatch(getRoomList(roomFilter));
-              alertRequestSuccess('Add room successfully!');
+              dispatch(getBookingList(bookingFilter));
+              alertRequestSuccess('Add booking successfully!');
               changeModal('close');
             } else {
               alertRequestFailure(resp?.message);
@@ -93,12 +76,9 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      id: room?._id,
-      name: room?.name,
-      description: room?.description,
-      price: room?.price,
-      imgURL: room?.imgURL,
-      hotels: room?.hotels
+      id: booking?._id,
+      email: booking?.email,
+      Note: booking?.Note
     },
     validationSchema,
     onSubmit: (values) => {
@@ -141,7 +121,7 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
                       verticalAlign: 'middle'
                     }}
                   >
-                    {room?._id ? `Edit "${room?.name}"` : `Add Room`}
+                    {booking?._id ? `Edit "${booking?.email}"` : `Add booking`}
                   </Typography>
                   <Button
                     variant="text"
@@ -163,75 +143,30 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
                   <Grid item xs={12}>
                     <TextField
                       fullWidth
-                      id="Name"
-                      name="name"
+                      id="email"
+                      name="email"
                       label={
                         <span>
-                          <span style={{ color: '#f44336' }}>*</span> Name
+                          <span style={{ color: '#f44336' }}>*</span> Email
                         </span>
                       }
-                      value={formik.values.name}
+                      value={formik.values.email}
                       onChange={formik.handleChange}
-                      error={formik.touched.name && Boolean(formik.errors.name)}
-                      helperText={formik.touched.name && formik.errors.name}
+                      error={formik.touched.email && Boolean(formik.errors.email)}
+                      helperText={formik.touched.email && formik.errors.email}
                     />
                   </Grid>
                   <Grid item xs={12}>
                     <TextField
                       fullWidth
-                      id="description"
-                      name="description"
-                      label="Description"
-                      value={formik.values.description}
+                      id="Note"
+                      name="Note"
+                      label="Note"
+                      value={formik.values.Note}
                       onChange={formik.handleChange}
-                      error={formik.touched.description && Boolean(formik.errors.description)}
-                      helperText={formik.touched.description && formik.errors.description}
+                      error={formik.touched.Note && Boolean(formik.errors.Note)}
+                      helperText={formik.touched.Note && formik.errors.Note}
                     />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      id="price"
-                      name="price"
-                      label="Price"
-                      type="number"
-                      value={formik.values.price}
-                      onChange={formik.handleChange}
-                      error={formik.touched.price && Boolean(formik.errors.price)}
-                      helperText={formik.touched.price && formik.errors.price}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      id="imgURL"
-                      name="imgURL"
-                      label="ImgURL"
-                      value={formik.values.imgURL}
-                      onChange={formik.handleChange}
-                      error={formik.touched.imgURL && Boolean(formik.errors.imgURL)}
-                      helperText={formik.touched.imgURL && formik.errors.imgURL}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <FormControl fullWidth>
-                      <InputLabel>Hotel</InputLabel>
-                      <Select
-                        id="hotels"
-                        name="hotels"
-                        label="room"
-                        displayEmpty
-                        value={formik.values.hotels}
-                        onChange={formik.handleChange}
-                        inputProps={{ 'aria-label': 'Without label' }}
-                      >
-                        {hotelState?.hotels.map((hotel: any, index: number) => (
-                          <MenuItem key={index} value={hotel._id}>
-                            {hotel.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
                   </Grid>
                   <Grid item xs={12}>
                     <AnimateButton>
@@ -250,4 +185,4 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
   );
 };
 
-export default AddOrEditRoom;
+export default AddOrEditBooking;

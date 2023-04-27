@@ -28,38 +28,38 @@ import { gridSpacing } from 'store/constant';
 import { useDispatch, useSelector } from 'store';
 import NoDataImg from 'assets/images/logo/nodata.png';
 import 'assets/scss/style.scss';
-import HotelList from './HotelList';
-import AddHotel from './EditorAddHotel';
-import { Hotel, HotelFilter } from 'types/hotel';
-import { getHotelList } from 'store/slices/hotel';
+import { Booking, BookingFilter } from 'types/booking';
+import { getBookingList } from 'store/slices/booking';
+import BookingList from './BookingList';
+import AddOrEditBooking from './EditorAddBooking';
 
-const initialState: HotelFilter = {
+const initialState: BookingFilter = {
   search: '',
   currentPage: 1,
   limit: 20
 };
-const HoteIndex = () => {
+const BookingIndex = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const hotelState = useSelector((state) => state?.hotel);
-  const menuState = useSelector((state) => state?.menu);
+  const bookingState = useSelector((state) => state.booking);
+  const menuState = useSelector((state) => state.menu);
 
   const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
   const matchDownMD = useMediaQuery(theme.breakpoints.down('lg'));
 
-  const [hotelFilter, setHotelFilter] = useState(initialState);
-  const [data, setData] = React.useState<Hotel[]>([]);
+  const [bookingFilter, setBookingFilter] = useState(initialState);
+  const [data, setData] = React.useState<Booking[]>([]);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
 
   const spacingMD = matchDownMD ? 1 : 1.5;
 
   const handleChange = (event: React.ChangeEvent<unknown>, page: number) => {
-    setHotelFilter({ ...hotelFilter, currentPage: page! });
+    setBookingFilter({ ...bookingFilter, currentPage: page! });
   };
 
   const [search, setSearch] = useState('');
   const handleSearch = (searchValue: string) => {
-    setHotelFilter({ ...hotelFilter, search: searchValue, currentPage: 1 });
+    setBookingFilter({ ...bookingFilter, search: searchValue, currentPage: 1 });
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,38 +69,38 @@ const HoteIndex = () => {
     setOpenDrawer((prevState) => !prevState);
   };
 
-  const getListHotel = async () => {
-    await dispatch(getHotelList(hotelFilter));
+  const getListBooking = async () => {
+    await dispatch(getBookingList(bookingFilter));
   };
 
-  const addHotel = () => {
+  const addBooking = () => {
     setOpenDrawer((prevState) => !prevState);
   };
 
   useEffect(() => {
-    setData(hotelState?.hotels);
-  }, [hotelState?.hotels]);
+    setData(bookingState.bookings);
+  }, [bookingState]);
 
   useEffect(() => {
-    getListHotel();
+    getListBooking();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hotelFilter]);
+  }, [bookingFilter]);
 
   useEffect(() => {
-    setHotelFilter(initialState);
-    getListHotel();
+    setBookingFilter(initialState);
+    getListBooking();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuState]);
 
   const getListAfterDelete = () => {
-    const countUsers = hotelState.hotels.length;
-    const { currentPage } = hotelFilter;
+    const countUsers = bookingState.bookings.length;
+    const { currentPage } = bookingFilter;
     if (countUsers <= 1 && currentPage > 1) {
-      const params = { ...hotelFilter, currentPage: currentPage - 1 };
-      setHotelFilter(params);
-      dispatch(getHotelList(params));
+      const params = { ...bookingFilter, currentPage: currentPage - 1 };
+      setBookingFilter(params);
+      dispatch(getBookingList(params));
     } else {
-      dispatch(getHotelList(hotelFilter));
+      dispatch(getBookingList(bookingFilter));
     }
   };
 
@@ -135,7 +135,12 @@ const HoteIndex = () => {
           </Grid>
           <Grid item xs={12} sm={6} sx={{ textAlign: 'right' }}>
             <Tooltip title="Add">
-              <Fab color="primary" size="small" onClick={addHotel} sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}>
+              <Fab
+                color="primary"
+                size="small"
+                onClick={addBooking}
+                sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
+              >
                 <AddIcon fontSize="small" />
               </Fab>
             </Tooltip>
@@ -149,21 +154,24 @@ const HoteIndex = () => {
           <TableHead>
             <TableRow>
               <TableCell>STT</TableCell>
-              <TableCell sx={{ width: '15%' }}>Name</TableCell>
-              <TableCell>Address</TableCell>
-              <TableCell sx={{ width: '46%' }}>Description</TableCell>
-              <TableCell sx={{ width: '10%' }}>Area </TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Note</TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {data &&
-              data?.map((hotel, index) => (
-                <HotelList key={hotel._id} hotel={hotel} index={index} hotelFilter={hotelFilter} getListAfterDelete={getListAfterDelete} />
-              ))}
+            {data?.map((booking, index) => (
+              <BookingList
+                key={booking._id}
+                booking={booking}
+                index={index}
+                bookingFilter={bookingFilter}
+                getListAfterDelete={getListAfterDelete}
+              />
+            ))}
           </TableBody>
         </Table>
-        <AddHotel editing open={openDrawer} handleDrawerOpen={handleDrawerOpen} hotelFilter={hotelFilter} hotel={{}} />
+        <AddOrEditBooking editing open={openDrawer} handleDrawerOpen={handleDrawerOpen} bookingFilter={bookingFilter} booking={{}} />
       </TableContainer>
       {data?.length === 0 && (
         <div className="noData">
@@ -177,8 +185,8 @@ const HoteIndex = () => {
             <Grid item>
               <Pagination
                 size={matchDownSM ? 'small' : 'medium'}
-                count={hotelState.pageCount}
-                page={hotelState.currentPage}
+                count={bookingState.pageCount}
+                page={bookingState.currentPage}
                 onChange={handleChange}
                 color="primary"
               />
@@ -190,4 +198,4 @@ const HoteIndex = () => {
   );
 };
 
-export default HoteIndex;
+export default BookingIndex;

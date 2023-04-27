@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 // THIRD-PARTY
-import { ButtonBase, Chip, IconButton, Menu, MenuItem, Stack, TableCell, TableRow, Typography, useTheme } from '@mui/material';
+import { ButtonBase, IconButton, Menu, MenuItem, Stack, TableCell, TableRow, Typography } from '@mui/material';
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -9,26 +9,24 @@ import MoreVertTwoToneIcon from '@mui/icons-material/MoreVertTwoTone';
 import moment from 'moment';
 
 // PROJECT IMPORTS
-import { dispatch, useSelector } from 'store';
+import { dispatch } from 'store';
 // import { deleteAdministrator } from 'store/slices/user';
 
 import { UserFilter } from 'types/user';
 import { UserProfile } from 'types/user-profile';
 import AddAdministrator from './EditAdmin';
-
-// import AlertDelete from 'ui-component/Alert/AlertDelete';
-// import { alertError, alertRequestSuccess } from 'utils/helpers/axios/errorAlert';
+import AlertDelete from 'ui-component/Alert/AlertDelete';
+import { delAdministrator } from 'store/slices/user';
+import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
 
 interface Props {
   administrator: UserProfile;
   index: number;
   adminFilter: UserFilter;
-  getListAfterDelete?: () => void;
+  getListAfterDelete: () => void;
 }
 
 const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }: Props) => {
-  const theme = useTheme();
-  const administratorState = useSelector((state) => state.user);
   const [editing, setEditing] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState(false);
   const [openAdministratorDrawer, setOpenAdministratorDrawer] = useState<boolean>(false);
@@ -54,21 +52,22 @@ const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }
 
   const handleModalClose = (status: boolean) => {
     setOpenModal(false);
-    // if (status) {
-    //   dispatch(
-    //     deleteAdministrator({
-    //       id: administrator.id,
-    //       callback: (resp) => {
-    //         if (resp?.data?.success) {
-    //           getListAfterDelete();
-    //           alertRequestSuccess('Deleted successfully!');
-    //         } else {
-    //           alertError(resp?.message);
-    //         }
-    //       }
-    //     })
-    //   );
-    // }
+    dispatch(
+      delAdministrator({
+        // eslint-disable-next-line no-underscore-dangle
+        id: administrator._id,
+        callback: (resp) => {
+          console.log('resp', resp);
+
+          if (resp?.status === 200) {
+            getListAfterDelete();
+            alertRequestSuccess('Deleted successfully!');
+          } else {
+            alertRequestFailure(resp?.message);
+          }
+        }
+      })
+    );
   };
   return (
     <>
@@ -134,7 +133,7 @@ const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }
               Delete
             </MenuItem>
           </Menu>
-          {/* {openModal && <AlertDelete name={administrator.name} open={openModal} handleClose={handleModalClose} />} */}
+          {openModal && <AlertDelete name={administrator.username} open={openModal} handleClose={handleModalClose} />}
         </TableCell>
       </TableRow>
       <AddAdministrator

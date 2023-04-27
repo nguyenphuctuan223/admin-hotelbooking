@@ -1,32 +1,26 @@
 // PROJECT IMPORTS
-
-export interface RoomState {
-  rooms: Room[];
+export interface TranstState {
+  transts: Transt[];
   pageCount?: number;
   currentPage: number;
   error?: any;
 }
 export interface Payload {
   id?: string | number;
-  params?: Room;
+  params?: Transt;
   callback?: (response: any) => void;
 }
 
-export type RoomFilter = {
+export type TranstFilter = {
   search?: string;
   currentPage: number;
   limit?: number;
 };
 
-export type Room = {
+export type Transt = {
   _id?: string;
-  name?: string;
-  roomType?: string;
-  description?: string;
-  hotels?: any;
-  imgURL?: string;
+  type?: string;
   price?: number;
-  hotel?: any;
   createdAt?: string;
   updatedAt?: string;
   __v?: number;

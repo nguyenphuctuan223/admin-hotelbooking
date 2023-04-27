@@ -1,20 +1,7 @@
 // THIRD-PARTY
 import { useEffect, useRef, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
-import {
-  Avatar,
-  Box,
-  ClickAwayListener,
-  Grid,
-  List,
-  ListItemButton,
-  ListItemText,
-  Paper,
-  Popper,
-  Typography,
-  useMediaQuery
-} from '@mui/material';
-import TranslateTwoToneIcon from '@mui/icons-material/TranslateTwoTone';
+import { Box, ClickAwayListener, Grid, List, ListItemButton, ListItemText, Paper, Popper, Typography, useMediaQuery } from '@mui/material';
 
 // PROJECT IMPORTS
 import Transitions from 'ui-component/extended/Transitions';
@@ -39,9 +26,9 @@ const LocalizationSection = () => {
     setOpen(false);
   };
 
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen);
-  };
+  // const handleToggle = () => {
+  //   setOpen((prevOpen) => !prevOpen);
+  // };
 
   const handleClose = (event: MouseEvent | TouchEvent) => {
     if (anchorRef.current && anchorRef.current.contains(event.target)) {

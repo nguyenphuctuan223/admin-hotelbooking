@@ -9,7 +9,6 @@ import Loader from 'ui-component/Loader';
 import { InitialLoginContextProps, JWTContextType } from 'types/auth';
 // import { KeyedObject } from 'types';
 import { LOGIN, LOGOUT } from 'store/actions';
-import { openSnackbar } from 'store/slices/snackbar';
 
 export const LOGIN_URL = `/auth/login`;
 export const ME_URL = `${process.env.REACT_APP_API_URL}/v1/me`;

@@ -10,6 +10,8 @@ import { UserStateProps } from 'types/user';
 import { AdminState } from './admin';
 import { RoomState } from './room';
 import { HotelState } from './hotel';
+import { BookingState } from './booking';
+import { TranstState } from './transport';
 
 export interface DefaultRootStateProps {
   snackbar: SnackbarProps;
@@ -17,6 +19,8 @@ export interface DefaultRootStateProps {
   admin: AdminState;
   hotel: HotelState;
   room: RoomState;
+  booking: BookingState;
+  transt: TranstState;
 }
 
 export interface ColorProps {

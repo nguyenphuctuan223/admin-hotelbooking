@@ -1,32 +1,27 @@
 // PROJECT IMPORTS
 
-export interface RoomState {
-  rooms: Room[];
+export interface BookingState {
+  bookings: Booking[];
   pageCount?: number;
   currentPage: number;
   error?: any;
 }
 export interface Payload {
   id?: string | number;
-  params?: Room;
+  params?: Booking;
   callback?: (response: any) => void;
 }
 
-export type RoomFilter = {
+export type BookingFilter = {
   search?: string;
   currentPage: number;
   limit?: number;
 };
 
-export type Room = {
+export type Booking = {
   _id?: string;
-  name?: string;
-  roomType?: string;
-  description?: string;
-  hotels?: any;
-  imgURL?: string;
-  price?: number;
-  hotel?: any;
+  email?: string;
+  Note?: string;
   createdAt?: string;
   updatedAt?: string;
   __v?: number;

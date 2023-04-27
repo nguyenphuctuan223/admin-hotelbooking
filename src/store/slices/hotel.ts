@@ -108,7 +108,6 @@ export function getDetailHotel(payload: Payload) {
   return async () => {
     try {
       const resp = await axios.get(HOTEL_URL.detailHotel(id));
-      dispatch(slice.actions.getHotelListSuccess(resp.data));
       if (callback) {
         callback(resp);
       }

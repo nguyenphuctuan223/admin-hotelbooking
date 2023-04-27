@@ -149,10 +149,10 @@ const RoomIndex = () => {
           <TableHead>
             <TableRow>
               <TableCell>STT</TableCell>
-              <TableCell sx={{ width: '15%' }}>Name</TableCell>
+              <TableCell>Name</TableCell>
               <TableCell>Hotel</TableCell>
-              <TableCell sx={{ width: '46%' }}>Description</TableCell>
-              <TableCell sx={{ width: '10%' }}>Price </TableCell>
+              <TableCell>Description</TableCell>
+              <TableCell>Price </TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>

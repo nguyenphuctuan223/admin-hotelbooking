@@ -130,17 +130,17 @@ const Administrators = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuState]);
 
-  // const getListAfterDelete = () => {
-  //   const countUsers = administratorState.users.length;
-  //   const { currentPage } = adminFilter;
-  //   if (countUsers <= 1 && currentPage > 1) {
-  //     const params = { ...adminFilter, currentPage: currentPage - 1 };
-  //     setAdminFilter(params);
-  //     dispatch(getAdministratorList(params));
-  //   } else {
-  //     dispatch(getAdministratorList(adminFilter));
-  //   }
-  // };
+  const getListAfterDelete = () => {
+    const countUsers = administratorState.users.length;
+    const { currentPage } = adminFilter;
+    if (countUsers <= 1 && currentPage > 1) {
+      const params = { ...adminFilter, currentPage: currentPage - 1 };
+      setAdminFilter(params);
+      dispatch(getAdministratorList(params));
+    } else {
+      dispatch(getAdministratorList(adminFilter));
+    }
+  };
 
   return (
     <MainCard
@@ -246,11 +246,12 @@ const Administrators = () => {
           <TableBody>
             {data?.map((administrator, index) => (
               <Administrator
-                key={administrator.id}
+                // eslint-disable-next-line no-underscore-dangle
+                key={administrator._id}
                 administrator={administrator}
                 index={index}
                 adminFilter={adminFilter}
-                // getListAfterDelete={}
+                getListAfterDelete={getListAfterDelete}
               />
             ))}
           </TableBody>

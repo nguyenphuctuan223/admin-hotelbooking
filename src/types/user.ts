@@ -11,7 +11,7 @@ export interface UserStateProps {
 export type UserFilter = {
   search?: string;
   status?: number | string;
-  currentPage?: number;
+  currentPage: number;
   limit?: number;
 };
 

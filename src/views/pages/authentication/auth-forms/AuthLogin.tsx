@@ -20,7 +20,7 @@ import {
   Typography
 } from '@mui/material';
 import { Formik } from 'formik';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 
 // PROJECT IMPORTS

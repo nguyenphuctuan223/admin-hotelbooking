@@ -2,7 +2,6 @@ import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { dispatch } from 'store';
 import { LoginState, Payload } from 'types/login';
-import { LOGIN, LOGOUT } from 'store/actions';
 
 // import { connectWallet } from '@utils/wallet';
 

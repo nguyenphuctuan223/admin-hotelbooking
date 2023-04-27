@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 // THIRD-PARTY
 import {
   Box,
@@ -33,7 +33,6 @@ import { gridSpacing } from 'store/constant';
 import { Hotel, HotelFilter } from 'types/hotel';
 import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
 import { addHotel, editHotel, getHotelList } from 'store/slices/hotel';
-import { Room } from 'types/room';
 import { getRoomList } from 'store/slices/room';
 
 interface Props {
@@ -79,7 +78,7 @@ const AddHotel = ({ open, editing, handleDrawerOpen, hotelFilter, hotel }: Props
               alertRequestSuccess('Edit hotel successfully!');
               changeModal('close');
             } else {
-              console.log('error');
+              alertRequestFailure(resp?.message);
             }
           }
         })
@@ -89,7 +88,7 @@ const AddHotel = ({ open, editing, handleDrawerOpen, hotelFilter, hotel }: Props
         addHotel({
           params: values,
           callback: (resp) => {
-            if (resp?.data) {
+            if (resp?.status === 200) {
               dispatch(getHotelList(hotelFilter));
               alertRequestSuccess('Add hotel successfully!');
               changeModal('close');
@@ -110,7 +109,7 @@ const AddHotel = ({ open, editing, handleDrawerOpen, hotelFilter, hotel }: Props
       description: hotel?.description,
       area: hotel?.area,
       imgURL: hotel?.imgURL,
-      room: hotel?.rooms
+      rooms: hotel?.rooms
     },
     validationSchema,
     onSubmit: (values) => {
@@ -240,11 +239,11 @@ const AddHotel = ({ open, editing, handleDrawerOpen, hotelFilter, hotel }: Props
                     <FormControl fullWidth>
                       <InputLabel>Room</InputLabel>
                       <Select
-                        id="room"
-                        name="room"
+                        id="rooms"
+                        name="rooms"
                         label="room"
                         displayEmpty
-                        value={formik.values.room}
+                        value={formik.values.rooms}
                         onChange={formik.handleChange}
                         inputProps={{ 'aria-label': 'Without label' }}
                       >

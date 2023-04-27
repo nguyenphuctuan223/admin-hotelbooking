@@ -10,6 +10,8 @@ import userReducer from 'store/slices/user';
 import loginReducer from './slices/login';
 import hotelReducer from './slices/hotel';
 import roomReducer from './slices/room';
+import bookingReducer from './slices/booking';
+import transtReducer from './slices/transt';
 
 const reducer = combineReducers({
   snackbar: snackbarReducer,
@@ -25,7 +27,9 @@ const reducer = combineReducers({
   menu: menuReducer,
   login: loginReducer,
   hotel: hotelReducer,
-  room: roomReducer
+  room: roomReducer,
+  booking: bookingReducer,
+  transt: transtReducer
 });
 
 export default reducer;
