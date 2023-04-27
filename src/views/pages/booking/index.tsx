@@ -28,38 +28,38 @@ import { gridSpacing } from 'store/constant';
 import { useDispatch, useSelector } from 'store';
 import NoDataImg from 'assets/images/logo/nodata.png';
 import 'assets/scss/style.scss';
-import { Room, RoomFilter } from 'types/room';
-import { getRoomList } from 'store/slices/room';
-import RoomList from './RoomList';
-import AddOrEditRoom from './EditorAddRoom';
+import { Booking, BookingFilter } from 'types/booking';
+import { getBookingList } from 'store/slices/booking';
+import BookingList from './BookingList';
+import AddOrEditBooking from './EditorAddBooking';
 
-const initialState: RoomFilter = {
+const initialState: BookingFilter = {
   search: '',
   currentPage: 1,
   limit: 20
 };
-const RoomIndex = () => {
+const BookingIndex = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const roomState = useSelector((state) => state.room);
+  const bookingState = useSelector((state) => state.booking);
   const menuState = useSelector((state) => state.menu);
 
   const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
   const matchDownMD = useMediaQuery(theme.breakpoints.down('lg'));
 
-  const [roomFilter, setRoomFilter] = useState(initialState);
-  const [data, setData] = React.useState<Room[]>([]);
+  const [bookingFilter, setBookingFilter] = useState(initialState);
+  const [data, setData] = React.useState<Booking[]>([]);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
 
   const spacingMD = matchDownMD ? 1 : 1.5;
 
   const handleChange = (event: React.ChangeEvent<unknown>, page: number) => {
-    setRoomFilter({ ...roomFilter, currentPage: page! });
+    setBookingFilter({ ...bookingFilter, currentPage: page! });
   };
 
   const [search, setSearch] = useState('');
   const handleSearch = (searchValue: string) => {
-    setRoomFilter({ ...roomFilter, search: searchValue, currentPage: 1 });
+    setBookingFilter({ ...bookingFilter, search: searchValue, currentPage: 1 });
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,38 +69,38 @@ const RoomIndex = () => {
     setOpenDrawer((prevState) => !prevState);
   };
 
-  const getListRoom = async () => {
-    await dispatch(getRoomList(roomFilter));
+  const getListBooking = async () => {
+    await dispatch(getBookingList(bookingFilter));
   };
 
-  const addRoom = () => {
+  const addBooking = () => {
     setOpenDrawer((prevState) => !prevState);
   };
 
   useEffect(() => {
-    setData(roomState.rooms);
-  }, [roomState]);
+    setData(bookingState.bookings);
+  }, [bookingState]);
 
   useEffect(() => {
-    getListRoom();
+    getListBooking();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomFilter]);
+  }, [bookingFilter]);
 
   useEffect(() => {
-    setRoomFilter(initialState);
-    getListRoom();
+    setBookingFilter(initialState);
+    getListBooking();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuState]);
 
   const getListAfterDelete = () => {
-    const countUsers = roomState.rooms.length;
-    const { currentPage } = roomFilter;
+    const countUsers = bookingState.bookings.length;
+    const { currentPage } = bookingFilter;
     if (countUsers <= 1 && currentPage > 1) {
-      const params = { ...roomFilter, currentPage: currentPage - 1 };
-      setRoomFilter(params);
-      dispatch(getRoomList(params));
+      const params = { ...bookingFilter, currentPage: currentPage - 1 };
+      setBookingFilter(params);
+      dispatch(getBookingList(params));
     } else {
-      dispatch(getRoomList(roomFilter));
+      dispatch(getBookingList(bookingFilter));
     }
   };
 
@@ -135,7 +135,12 @@ const RoomIndex = () => {
           </Grid>
           <Grid item xs={12} sm={6} sx={{ textAlign: 'right' }}>
             <Tooltip title="Add">
-              <Fab color="primary" size="small" onClick={addRoom} sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}>
+              <Fab
+                color="primary"
+                size="small"
+                onClick={addBooking}
+                sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
+              >
                 <AddIcon fontSize="small" />
               </Fab>
             </Tooltip>
@@ -149,20 +154,24 @@ const RoomIndex = () => {
           <TableHead>
             <TableRow>
               <TableCell>STT</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Hotel</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Price </TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Note</TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.map((room, index) => (
-              <RoomList key={room._id} room={room} index={index} roomFilter={roomFilter} getListAfterDelete={getListAfterDelete} />
+            {data?.map((booking, index) => (
+              <BookingList
+                key={booking._id}
+                booking={booking}
+                index={index}
+                bookingFilter={bookingFilter}
+                getListAfterDelete={getListAfterDelete}
+              />
             ))}
           </TableBody>
         </Table>
-        <AddOrEditRoom editing open={openDrawer} handleDrawerOpen={handleDrawerOpen} roomFilter={roomFilter} room={{}} />
+        <AddOrEditBooking editing open={openDrawer} handleDrawerOpen={handleDrawerOpen} bookingFilter={bookingFilter} booking={{}} />
       </TableContainer>
       {data?.length === 0 && (
         <div className="noData">
@@ -176,8 +185,8 @@ const RoomIndex = () => {
             <Grid item>
               <Pagination
                 size={matchDownSM ? 'small' : 'medium'}
-                count={roomState.pageCount}
-                page={roomState.currentPage}
+                count={bookingState.pageCount}
+                page={bookingState.currentPage}
                 onChange={handleChange}
                 color="primary"
               />
@@ -189,4 +198,4 @@ const RoomIndex = () => {
   );
 };
 
-export default RoomIndex;
+export default BookingIndex;

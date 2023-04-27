@@ -1,21 +1,6 @@
 /* eslint-disable no-underscore-dangle */
-import React from 'react';
 // THIRD-PARTY
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  Divider,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography
-} from '@mui/material';
+import { Box, Button, Dialog, DialogContent, Divider, Grid, Stack, TextField, Typography } from '@mui/material';
 
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
@@ -27,28 +12,26 @@ import * as yup from 'yup';
 import { useFormik } from 'formik';
 
 // PROJECT IMPORTS
-import { dispatch, useSelector } from 'store';
+import { dispatch } from 'store';
 import { gridSpacing } from 'store/constant';
 
 import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
-import { Room, RoomFilter } from 'types/room';
-import { addRoom, editRoom, getRoomList } from 'store/slices/room';
+import { Transt, TranstFilter } from 'types/transport';
+import { addTranst, editTranst, getTranstList } from 'store/slices/transt';
 
 interface Props {
   open: boolean;
-  room: Room;
-  roomFilter: RoomFilter;
+  transt: Transt;
+  transtFilter: TranstFilter;
   editing?: boolean;
   handleDrawerOpen: () => void;
 }
 
 const validationSchema = yup.object({
-  name: yup.string().trim().max(50, `Maximum characters allowed is 50`).required('Name is required')
+  type: yup.string().trim().max(50, `Maximum characters allowed is 50`).required('Name is required')
 });
 
-const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Props) => {
-  const hotelState = useSelector((state) => state.hotel);
-
+const AddOrEditTranst = ({ open, editing, handleDrawerOpen, transtFilter, transt }: Props) => {
   const changeModal = (type: string) => {
     if (type === 'close') {
       handleDrawerOpen();
@@ -56,16 +39,16 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
     }
   };
 
-  const HandleSubmit = (values: Room) => {
-    if (room?._id) {
+  const HandleSubmit = (values: Transt) => {
+    if (transt?._id) {
       dispatch(
-        editRoom({
-          id: room?._id,
+        editTranst({
+          id: transt?._id,
           params: values,
           callback: (resp) => {
             if (resp?.status === 200) {
-              dispatch(getRoomList(roomFilter));
-              alertRequestSuccess('Edit room successfully!');
+              dispatch(getTranstList(transtFilter));
+              alertRequestSuccess('Edit transt successfully!');
               changeModal('close');
             } else {
               alertRequestFailure(resp?.message);
@@ -75,12 +58,12 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
       );
     } else {
       dispatch(
-        addRoom({
+        addTranst({
           params: values,
           callback: (resp) => {
             if (resp?.status === 200) {
-              dispatch(getRoomList(roomFilter));
-              alertRequestSuccess('Add room successfully!');
+              dispatch(getTranstList(transtFilter));
+              alertRequestSuccess('Add transt successfully!');
               changeModal('close');
             } else {
               alertRequestFailure(resp?.message);
@@ -93,12 +76,9 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      id: room?._id,
-      name: room?.name,
-      description: room?.description,
-      price: room?.price,
-      imgURL: room?.imgURL,
-      hotels: room?.hotels
+      id: transt?._id,
+      type: transt?.type,
+      price: transt?.price
     },
     validationSchema,
     onSubmit: (values) => {
@@ -141,7 +121,7 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
                       verticalAlign: 'middle'
                     }}
                   >
-                    {room?._id ? `Edit "${room?.name}"` : `Add Room`}
+                    {transt?._id ? `Edit "${transt?.type}"` : `Add transt`}
                   </Typography>
                   <Button
                     variant="text"
@@ -163,29 +143,17 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
                   <Grid item xs={12}>
                     <TextField
                       fullWidth
-                      id="Name"
-                      name="name"
+                      id="type"
+                      name="type"
                       label={
                         <span>
-                          <span style={{ color: '#f44336' }}>*</span> Name
+                          <span style={{ color: '#f44336' }}>*</span> Type
                         </span>
                       }
-                      value={formik.values.name}
+                      value={formik.values.type}
                       onChange={formik.handleChange}
-                      error={formik.touched.name && Boolean(formik.errors.name)}
-                      helperText={formik.touched.name && formik.errors.name}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      id="description"
-                      name="description"
-                      label="Description"
-                      value={formik.values.description}
-                      onChange={formik.handleChange}
-                      error={formik.touched.description && Boolean(formik.errors.description)}
-                      helperText={formik.touched.description && formik.errors.description}
+                      error={formik.touched.type && Boolean(formik.errors.type)}
+                      helperText={formik.touched.type && formik.errors.type}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -200,38 +168,6 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
                       error={formik.touched.price && Boolean(formik.errors.price)}
                       helperText={formik.touched.price && formik.errors.price}
                     />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      id="imgURL"
-                      name="imgURL"
-                      label="ImgURL"
-                      value={formik.values.imgURL}
-                      onChange={formik.handleChange}
-                      error={formik.touched.imgURL && Boolean(formik.errors.imgURL)}
-                      helperText={formik.touched.imgURL && formik.errors.imgURL}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <FormControl fullWidth>
-                      <InputLabel>Hotel</InputLabel>
-                      <Select
-                        id="hotels"
-                        name="hotels"
-                        label="room"
-                        displayEmpty
-                        value={formik.values.hotels}
-                        onChange={formik.handleChange}
-                        inputProps={{ 'aria-label': 'Without label' }}
-                      >
-                        {hotelState?.hotels.map((hotel: any, index: number) => (
-                          <MenuItem key={index} value={hotel._id}>
-                            {hotel.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
                   </Grid>
                   <Grid item xs={12}>
                     <AnimateButton>
@@ -250,4 +186,4 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
   );
 };
 
-export default AddOrEditRoom;
+export default AddOrEditTranst;

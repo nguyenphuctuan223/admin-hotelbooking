@@ -28,38 +28,39 @@ import { gridSpacing } from 'store/constant';
 import { useDispatch, useSelector } from 'store';
 import NoDataImg from 'assets/images/logo/nodata.png';
 import 'assets/scss/style.scss';
-import { Room, RoomFilter } from 'types/room';
-import { getRoomList } from 'store/slices/room';
-import RoomList from './RoomList';
-import AddOrEditRoom from './EditorAddRoom';
 
-const initialState: RoomFilter = {
+import { Transt, TranstFilter } from 'types/transport';
+import { getTranstList } from 'store/slices/transt';
+import TranstList from './TranstList';
+import AddOrEditTranst from './EditorAddTranst';
+
+const initialState: TranstFilter = {
   search: '',
   currentPage: 1,
   limit: 20
 };
-const RoomIndex = () => {
+const TranstIndex = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const roomState = useSelector((state) => state.room);
+  const transtState = useSelector((state) => state.transt);
   const menuState = useSelector((state) => state.menu);
 
   const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
   const matchDownMD = useMediaQuery(theme.breakpoints.down('lg'));
 
-  const [roomFilter, setRoomFilter] = useState(initialState);
-  const [data, setData] = React.useState<Room[]>([]);
+  const [transtFilter, setTranstFilter] = useState(initialState);
+  const [data, setData] = React.useState<Transt[]>([]);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
 
   const spacingMD = matchDownMD ? 1 : 1.5;
 
   const handleChange = (event: React.ChangeEvent<unknown>, page: number) => {
-    setRoomFilter({ ...roomFilter, currentPage: page! });
+    setTranstFilter({ ...transtFilter, currentPage: page! });
   };
 
   const [search, setSearch] = useState('');
   const handleSearch = (searchValue: string) => {
-    setRoomFilter({ ...roomFilter, search: searchValue, currentPage: 1 });
+    setTranstFilter({ ...transtFilter, search: searchValue, currentPage: 1 });
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,38 +70,38 @@ const RoomIndex = () => {
     setOpenDrawer((prevState) => !prevState);
   };
 
-  const getListRoom = async () => {
-    await dispatch(getRoomList(roomFilter));
+  const getListTranst = async () => {
+    await dispatch(getTranstList(transtFilter));
   };
 
-  const addRoom = () => {
+  const addTranst = () => {
     setOpenDrawer((prevState) => !prevState);
   };
 
   useEffect(() => {
-    setData(roomState.rooms);
-  }, [roomState]);
+    setData(transtState.transts);
+  }, [transtState]);
 
   useEffect(() => {
-    getListRoom();
+    getListTranst();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomFilter]);
+  }, [transtFilter]);
 
   useEffect(() => {
-    setRoomFilter(initialState);
-    getListRoom();
+    setTranstFilter(initialState);
+    getListTranst();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuState]);
 
   const getListAfterDelete = () => {
-    const countUsers = roomState.rooms.length;
-    const { currentPage } = roomFilter;
+    const countUsers = transtState.transts.length;
+    const { currentPage } = transtFilter;
     if (countUsers <= 1 && currentPage > 1) {
-      const params = { ...roomFilter, currentPage: currentPage - 1 };
-      setRoomFilter(params);
-      dispatch(getRoomList(params));
+      const params = { ...transtFilter, currentPage: currentPage - 1 };
+      setTranstFilter(params);
+      dispatch(getTranstList(params));
     } else {
-      dispatch(getRoomList(roomFilter));
+      dispatch(getTranstList(transtFilter));
     }
   };
 
@@ -135,7 +136,7 @@ const RoomIndex = () => {
           </Grid>
           <Grid item xs={12} sm={6} sx={{ textAlign: 'right' }}>
             <Tooltip title="Add">
-              <Fab color="primary" size="small" onClick={addRoom} sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}>
+              <Fab color="primary" size="small" onClick={addTranst} sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}>
                 <AddIcon fontSize="small" />
               </Fab>
             </Tooltip>
@@ -149,20 +150,24 @@ const RoomIndex = () => {
           <TableHead>
             <TableRow>
               <TableCell>STT</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Hotel</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Price </TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Price</TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.map((room, index) => (
-              <RoomList key={room._id} room={room} index={index} roomFilter={roomFilter} getListAfterDelete={getListAfterDelete} />
+            {data?.map((transt, index) => (
+              <TranstList
+                key={transt._id}
+                transt={transt}
+                index={index}
+                transtFilter={transtFilter}
+                getListAfterDelete={getListAfterDelete}
+              />
             ))}
           </TableBody>
         </Table>
-        <AddOrEditRoom editing open={openDrawer} handleDrawerOpen={handleDrawerOpen} roomFilter={roomFilter} room={{}} />
+        <AddOrEditTranst editing open={openDrawer} handleDrawerOpen={handleDrawerOpen} transtFilter={transtFilter} transt={{}} />
       </TableContainer>
       {data?.length === 0 && (
         <div className="noData">
@@ -176,8 +181,8 @@ const RoomIndex = () => {
             <Grid item>
               <Pagination
                 size={matchDownSM ? 'small' : 'medium'}
-                count={roomState.pageCount}
-                page={roomState.currentPage}
+                count={transtState.pageCount}
+                page={transtState.currentPage}
                 onChange={handleChange}
                 color="primary"
               />
@@ -189,4 +194,4 @@ const RoomIndex = () => {
   );
 };
 
-export default RoomIndex;
+export default TranstIndex;

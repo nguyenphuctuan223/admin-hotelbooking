@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 // THIRD-PARTY
-import { ButtonBase, Chip, IconButton, Menu, MenuItem, Stack, TableCell, TableRow, Typography, useTheme } from '@mui/material';
+import { ButtonBase, IconButton, Menu, MenuItem, Stack, TableCell, TableRow, Typography } from '@mui/material';
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MoreVertTwoToneIcon from '@mui/icons-material/MoreVertTwoTone';
 
 // PROJECT IMPORTS
-import { dispatch, useSelector } from 'store';
+import { dispatch } from 'store';
 
 import AddHotel from './EditorAddHotel';
 import { Hotel, HotelFilter } from 'types/hotel';
@@ -26,7 +26,6 @@ interface Props {
 }
 
 const HotelList = ({ hotel, index, hotelFilter, getListAfterDelete }: Props) => {
-  const theme = useTheme();
   const [editing, setEditing] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState(false);
   const [openhotelDrawer, setOpenhotelDrawer] = useState<boolean>(false);

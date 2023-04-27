@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 // THIRD-PARTY
-import { ButtonBase, Chip, IconButton, Menu, MenuItem, Stack, TableCell, TableRow, Typography, useTheme } from '@mui/material';
+import { ButtonBase, IconButton, Menu, MenuItem, Stack, TableCell, TableRow, Typography } from '@mui/material';
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -9,7 +9,7 @@ import MoreVertTwoToneIcon from '@mui/icons-material/MoreVertTwoTone';
 import moment from 'moment';
 
 // PROJECT IMPORTS
-import { dispatch, useSelector } from 'store';
+import { dispatch } from 'store';
 // import { deleteAdministrator } from 'store/slices/user';
 
 import { UserFilter } from 'types/user';
@@ -19,9 +19,6 @@ import AlertDelete from 'ui-component/Alert/AlertDelete';
 import { delAdministrator } from 'store/slices/user';
 import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
 
-// import AlertDelete from 'ui-component/Alert/AlertDelete';
-// import { alertError, alertRequestSuccess } from 'utils/helpers/axios/errorAlert';
-
 interface Props {
   administrator: UserProfile;
   index: number;
@@ -30,8 +27,6 @@ interface Props {
 }
 
 const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }: Props) => {
-  const theme = useTheme();
-  const administratorState = useSelector((state) => state.user);
   const [editing, setEditing] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState(false);
   const [openAdministratorDrawer, setOpenAdministratorDrawer] = useState<boolean>(false);
@@ -62,6 +57,8 @@ const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }
         // eslint-disable-next-line no-underscore-dangle
         id: administrator._id,
         callback: (resp) => {
+          console.log('resp', resp);
+
           if (resp?.status === 200) {
             getListAfterDelete();
             alertRequestSuccess('Deleted successfully!');
