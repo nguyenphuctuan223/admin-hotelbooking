@@ -37,27 +37,27 @@ const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
 
   console.log('123', dataHotel);
 
-  const getOneHotel = () => {
-    dispatch(
-      getDetailHotel({
-        // eslint-disable-next-line no-underscore-dangle
-        id: room.hotel,
-        callback: (resp) => {
-          if (resp?.status === 200) {
-            setDataHotel(resp?.data?.name);
-            alertRequestSuccess('get successfully!');
-          } else {
-            alertRequestFailure(resp?.message);
-          }
-        }
-      })
-    );
-  };
-  useEffect(() => {
-    if (room?.hotel) {
-      getOneHotel();
-    }
-  }, []);
+  // const getOneHotel = () => {
+  //   dispatch(
+  //     getDetailHotel({
+  //       // eslint-disable-next-line no-underscore-dangle
+  //       id: room.hotel,
+  //       callback: (resp) => {
+  //         if (resp?.status === 200) {
+  //           setDataHotel(resp?.data?.name);
+  //           alertRequestSuccess('get successfully!');
+  //         } else {
+  //           alertRequestFailure(resp?.message);
+  //         }
+  //       }
+  //     })
+  //   );
+  // };
+  // useEffect(() => {
+  //   if (room?.hotel) {
+  //     getOneHotel();
+  //   }
+  // }, []);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -103,7 +103,7 @@ const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
           </Stack>
         </TableCell>
         <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '200px' }}>{room.name}</TableCell>
-        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{dataHotel}</TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{room.hotel}</TableCell>
         <TableCell component="th" scope="row">
           {room.description}
         </TableCell>

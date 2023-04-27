@@ -88,8 +88,8 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
       <Formik
         enableReinitialize
         initialValues={{
-          username: '',
-          password: '',
+          username: 'manh1',
+          password: '123456',
           submit: null
         }}
         validationSchema={Yup.object().shape({

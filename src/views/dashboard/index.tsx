@@ -25,5 +25,4 @@ const DashboardPage = () => {
     </MainCard>
   );
 };
-
 export default DashboardPage;
