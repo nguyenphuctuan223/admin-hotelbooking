@@ -12,6 +12,7 @@ import hotelReducer from './slices/hotel';
 import roomReducer from './slices/room';
 import bookingReducer from './slices/booking';
 import transtReducer from './slices/transt';
+import reviewReducer from './slices/comment';
 
 const reducer = combineReducers({
   snackbar: snackbarReducer,
@@ -29,7 +30,8 @@ const reducer = combineReducers({
   hotel: hotelReducer,
   room: roomReducer,
   booking: bookingReducer,
-  transt: transtReducer
+  transt: transtReducer,
+  review: reviewReducer
 });
 
 export default reducer;

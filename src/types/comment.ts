@@ -1,30 +1,30 @@
 // PROJECT IMPORTS
-
-export interface BookingState {
-  bookings: Booking[];
+export interface ReviewState {
+  reviews: Review[];
   pageCount?: number;
   currentPage: number;
   error?: any;
 }
 export interface Payload {
   id?: string | number;
-  params?: Booking;
+  params?: Review;
   callback?: (response: any) => void;
 }
 
-export type BookingFilter = {
+export type ReviewFilter = {
   search?: string;
   currentPage: number;
   limit?: number;
 };
 
-export type Booking = {
+export type Review = {
   _id?: string;
+  name?: string;
   email?: string;
-  Note?: string;
   customer?: string;
-  trans?: string;
-  status?: string;
+  hotel?: any;
+  comment?: string;
+  rate?: number;
   createdAt?: string;
   updatedAt?: string;
   __v?: number;

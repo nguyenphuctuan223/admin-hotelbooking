@@ -56,7 +56,7 @@ const HotelList = ({ hotel, index, hotelFilter, getListAfterDelete }: Props) => 
         // eslint-disable-next-line no-underscore-dangle
         id: hotel?._id,
         callback: (resp) => {
-          if (resp?.data) {
+          if (resp?.status === 200) {
             getListAfterDelete();
             alertRequestSuccess('Deleted successfully!');
           } else {

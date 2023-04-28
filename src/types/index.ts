@@ -12,6 +12,7 @@ import { RoomState } from './room';
 import { HotelState } from './hotel';
 import { BookingState } from './booking';
 import { TranstState } from './transport';
+import { ReviewState } from './comment';
 
 export interface DefaultRootStateProps {
   snackbar: SnackbarProps;
@@ -21,6 +22,7 @@ export interface DefaultRootStateProps {
   room: RoomState;
   booking: BookingState;
   transt: TranstState;
+  review: ReviewState;
 }
 
 export interface ColorProps {

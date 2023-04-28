@@ -1,5 +1,4 @@
 /* eslint-disable no-underscore-dangle */
-import React from 'react';
 // THIRD-PARTY
 import {
   Box,
@@ -31,13 +30,14 @@ import { dispatch, useSelector } from 'store';
 import { gridSpacing } from 'store/constant';
 
 import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
-import { Room, RoomFilter } from 'types/room';
-import { addRoom, editRoom, getRoomList } from 'store/slices/room';
+
+import { Review, ReviewFilter } from 'types/comment';
+import { addReview, editReview, getReviewList } from 'store/slices/comment';
 
 interface Props {
   open: boolean;
-  room: Room;
-  roomFilter: RoomFilter;
+  review: Review;
+  reviewFilter: ReviewFilter;
   editing?: boolean;
   handleDrawerOpen: () => void;
 }
@@ -46,7 +46,7 @@ const validationSchema = yup.object({
   name: yup.string().trim().max(50, `Maximum characters allowed is 50`).required('Name is required')
 });
 
-const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Props) => {
+const AddOrEditComment = ({ open, editing, handleDrawerOpen, reviewFilter, review }: Props) => {
   const hotelState = useSelector((state) => state.hotel);
 
   const changeModal = (type: string) => {
@@ -56,16 +56,16 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
     }
   };
 
-  const HandleSubmit = (values: Room) => {
-    if (room?._id) {
+  const HandleSubmit = (values: Review) => {
+    if (review?._id) {
       dispatch(
-        editRoom({
-          id: room?._id,
+        editReview({
+          id: review?._id,
           params: values,
           callback: (resp) => {
             if (resp?.status === 200) {
-              dispatch(getRoomList(roomFilter));
-              alertRequestSuccess('Edit room successfully!');
+              dispatch(getReviewList(reviewFilter));
+              alertRequestSuccess('Edit view successfully!');
               changeModal('close');
             } else {
               alertRequestFailure(resp?.message);
@@ -75,12 +75,12 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
       );
     } else {
       dispatch(
-        addRoom({
+        addReview({
           params: values,
           callback: (resp) => {
             if (resp?.status === 200) {
-              dispatch(getRoomList(roomFilter));
-              alertRequestSuccess('Add room successfully!');
+              dispatch(getReviewList(reviewFilter));
+              alertRequestSuccess('Add view successfully!');
               changeModal('close');
             } else {
               alertRequestFailure(resp?.message);
@@ -93,12 +93,13 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      id: room?._id,
-      name: room?.name,
-      description: room?.description,
-      price: room?.price,
-      imgURL: room?.imgURL,
-      hotel: room?.hotel
+      id: review?._id,
+      name: review?.name,
+      comment: review?.comment,
+      email: review?.email,
+      hotel: review?.hotel,
+      customer: review?.customer,
+      rate: review?.rate
     },
     validationSchema,
     onSubmit: (values) => {
@@ -141,7 +142,7 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
                       verticalAlign: 'middle'
                     }}
                   >
-                    {room?._id ? `Edit "${room?.name}"` : `Add Room`}
+                    {review?._id ? `Edit "${review?.name}"` : `Add review`}
                   </Typography>
                   <Button
                     variant="text"
@@ -163,7 +164,7 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
                   <Grid item xs={12}>
                     <TextField
                       fullWidth
-                      id="Name"
+                      id="name"
                       name="name"
                       label={
                         <span>
@@ -179,38 +180,25 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
                   <Grid item xs={12}>
                     <TextField
                       fullWidth
-                      id="description"
-                      name="description"
-                      label="Description"
-                      value={formik.values.description}
+                      id="email"
+                      name="email"
+                      label="Email"
+                      value={formik.values.email}
                       onChange={formik.handleChange}
-                      error={formik.touched.description && Boolean(formik.errors.description)}
-                      helperText={formik.touched.description && formik.errors.description}
+                      error={formik.touched.email && Boolean(formik.errors.email)}
+                      helperText={formik.touched.email && formik.errors.email}
                     />
                   </Grid>
                   <Grid item xs={12}>
                     <TextField
                       fullWidth
-                      id="price"
-                      name="price"
-                      label="Price"
-                      type="number"
-                      value={formik.values.price}
+                      id="comment"
+                      name="comment"
+                      label="Comment"
+                      value={formik.values.comment}
                       onChange={formik.handleChange}
-                      error={formik.touched.price && Boolean(formik.errors.price)}
-                      helperText={formik.touched.price && formik.errors.price}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      id="imgURL"
-                      name="imgURL"
-                      label="ImgURL"
-                      value={formik.values.imgURL}
-                      onChange={formik.handleChange}
-                      error={formik.touched.imgURL && Boolean(formik.errors.imgURL)}
-                      helperText={formik.touched.imgURL && formik.errors.imgURL}
+                      error={formik.touched.comment && Boolean(formik.errors.comment)}
+                      helperText={formik.touched.comment && formik.errors.comment}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -234,6 +222,19 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
                     </FormControl>
                   </Grid>
                   <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      id="rate"
+                      name="rate"
+                      label="Rate"
+                      type="number"
+                      value={formik.values.rate}
+                      onChange={formik.handleChange}
+                      error={formik.touched.rate && Boolean(formik.errors.rate)}
+                      helperText={formik.touched.rate && formik.errors.rate}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
                     <AnimateButton>
                       <Button fullWidth variant="contained" type="submit">
                         Save
@@ -250,4 +251,4 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
   );
 };
 
-export default AddOrEditRoom;
+export default AddOrEditComment;

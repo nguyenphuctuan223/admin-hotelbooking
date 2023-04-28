@@ -154,8 +154,11 @@ const BookingIndex = () => {
           <TableHead>
             <TableRow>
               <TableCell>STT</TableCell>
+              <TableCell>Customer</TableCell>
               <TableCell>Email</TableCell>
+              <TableCell>Trans</TableCell>
               <TableCell>Note</TableCell>
+              <TableCell>Status</TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>

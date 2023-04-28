@@ -53,7 +53,7 @@ const TranstList = ({ transt, index, transtFilter, getListAfterDelete }: Props) 
         // eslint-disable-next-line no-underscore-dangle
         id: transt._id,
         callback: (resp) => {
-          if (resp?.data) {
+          if (resp?.status === 200) {
             getListAfterDelete();
             alertRequestSuccess('Deleted successfully!');
           } else {

@@ -64,7 +64,7 @@ const application = {
       breadcrumbs: true
     },
     {
-      id: 'manage-transts',
+      id: 'manage-comments',
       title: <FormattedMessage id="comment" />,
       type: 'item',
       url: '/comment',

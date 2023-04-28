@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 // THIRD-PARTY
-import { ButtonBase, IconButton, Menu, MenuItem, Stack, TableCell, TableRow, Typography } from '@mui/material';
+import { ButtonBase, Chip, IconButton, Menu, MenuItem, Stack, TableCell, TableRow, Typography } from '@mui/material';
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -53,7 +53,7 @@ const BookingList = ({ booking, index, bookingFilter, getListAfterDelete }: Prop
         // eslint-disable-next-line no-underscore-dangle
         id: booking._id,
         callback: (resp) => {
-          if (resp?.data) {
+          if (resp?.status === 200) {
             getListAfterDelete();
             alertRequestSuccess('Deleted successfully!');
           } else {
@@ -71,8 +71,13 @@ const BookingList = ({ booking, index, bookingFilter, getListAfterDelete }: Prop
             <Typography variant="body2">{index + 1}</Typography>
           </Stack>
         </TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{booking.customer}</TableCell>
         <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '200px' }}>{booking.email}</TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{booking.trans}</TableCell>
         <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{booking.Note}</TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>
+          <Chip label={booking.status} color="error" variant="outlined" />
+        </TableCell>
 
         <TableCell align="center">
           <ButtonBase

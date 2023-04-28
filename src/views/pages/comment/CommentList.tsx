@@ -11,25 +11,24 @@ import { dispatch } from 'store';
 
 import AlertDelete from 'ui-component/Alert/AlertDelete';
 import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
-import { Room, RoomFilter } from 'types/room';
-import { delRoom } from 'store/slices/room';
-import AddOrEditRoom from './EditorAddRoom';
+
+import { delTranst } from 'store/slices/transt';
+import { Review, ReviewFilter } from 'types/comment';
+import AddOrEditComment from './EditOrAddComment';
+import { delReview } from 'store/slices/comment';
 import { getDetailHotel, getHotelList } from 'store/slices/hotel';
 
-// import AlertDelete from 'ui-component/Alert/AlertDelete';
-// import { alertError, alertRequestSuccess } from 'utils/helpers/axios/errorAlert';
-
 interface Props {
-  room: Room;
-  roomFilter: RoomFilter;
+  review: Review;
+  reviewFilter: ReviewFilter;
   index: number;
   getListAfterDelete: () => void;
 }
 
-const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
+const CommentList = ({ review, index, reviewFilter, getListAfterDelete }: Props) => {
   const [editing, setEditing] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState(false);
-  const [openroomDrawer, setOpenroomDrawer] = useState<boolean>(false);
+  const [openReviewDrawer, setOpenReviewDrawer] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<Element | ((element: Element) => Element) | null | undefined>(null);
 
   const [dataHotel, setDataHotel] = useState<string>('');
@@ -42,11 +41,10 @@ const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
     dispatch(
       getDetailHotel({
         // eslint-disable-next-line no-underscore-dangle
-        id: room.hotel,
+        id: review.hotel,
         callback: (resp) => {
           if (resp?.status === 200) {
             setDataHotel(resp?.data?.name);
-            alertRequestSuccess('get successfully!');
           } else {
             alertRequestFailure(resp?.message);
           }
@@ -55,7 +53,7 @@ const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
     );
   };
   useEffect(() => {
-    if (room?.hotel) {
+    if (review?.hotel) {
       getOneHotel();
     }
   }, []);
@@ -71,22 +69,22 @@ const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
     setAnchorEl(event?.currentTarget);
   };
 
-  const handleroomDrawerOpen = async () => {
+  const handleReviewDrawerOpen = async () => {
     await setEditing(false);
-    setOpenroomDrawer((prevState) => !prevState);
+    setOpenReviewDrawer((prevState) => !prevState);
   };
 
-  const editRoom = async () => {
+  const updateReview = async () => {
     await setEditing(true);
-    setOpenroomDrawer((prevState) => !prevState);
+    setOpenReviewDrawer((prevState) => !prevState);
   };
 
   const handleModalClose = () => {
     setOpenModal(false);
     dispatch(
-      delRoom({
+      delReview({
         // eslint-disable-next-line no-underscore-dangle
-        id: room._id,
+        id: review._id,
         callback: (resp) => {
           if (resp?.status === 200) {
             getListAfterDelete();
@@ -106,14 +104,11 @@ const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
             <Typography variant="body2">{index + 1}</Typography>
           </Stack>
         </TableCell>
-        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '200px' }}>{room.name}</TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '200px' }}>{review?.name}</TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{review?.email}</TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{review?.comment}</TableCell>
         <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{dataHotel}</TableCell>
-        <TableCell component="th" scope="row">
-          {room.description}
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {room.price}
-        </TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{review?.rate}</TableCell>
 
         <TableCell align="center">
           <ButtonBase
@@ -146,7 +141,7 @@ const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
             <MenuItem
               onClick={() => {
                 handleClose();
-                editRoom();
+                updateReview();
               }}
             >
               <EditIcon fontSize="small" sx={{ color: '#2196f3', mr: 1 }} />
@@ -162,11 +157,17 @@ const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
               Delete
             </MenuItem>
           </Menu>
-          {openModal && <AlertDelete name={room.name} open={openModal} handleClose={handleModalClose} />}
+          {openModal && <AlertDelete name={review?.name} open={openModal} handleClose={handleModalClose} />}
         </TableCell>
       </TableRow>
-      <AddOrEditRoom editing={editing} room={room} roomFilter={roomFilter} open={openroomDrawer} handleDrawerOpen={handleroomDrawerOpen} />
+      <AddOrEditComment
+        editing={editing}
+        review={review}
+        reviewFilter={reviewFilter}
+        open={openReviewDrawer}
+        handleDrawerOpen={handleReviewDrawerOpen}
+      />
     </>
   );
 };
-export default RoomList;
+export default CommentList;
