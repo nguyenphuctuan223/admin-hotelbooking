@@ -12,8 +12,19 @@ import BedroomChildIcon from '@mui/icons-material/BedroomChild';
 import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded';
 
 import EmojiTransportationIcon from '@mui/icons-material/EmojiTransportation';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 
-const icons = { ManageAccountsIcon, HotelIcon, SettingsIcon, BedroomChildIcon, BookmarkAddedIcon, EmojiTransportationIcon };
+const icons = {
+  ManageAccountsIcon,
+  HotelIcon,
+  SettingsIcon,
+  BedroomChildIcon,
+  BookmarkAddedIcon,
+  EmojiTransportationIcon,
+  QuestionAnswerIcon,
+  CleaningServicesIcon
+};
 
 const application = {
   id: 'application',
@@ -54,10 +65,26 @@ const application = {
     },
     {
       id: 'manage-transts',
+      title: <FormattedMessage id="comment" />,
+      type: 'item',
+      url: '/comment',
+      icon: icons.QuestionAnswerIcon,
+      breadcrumbs: true
+    },
+    {
+      id: 'manage-transts',
       title: <FormattedMessage id="transt" />,
       type: 'item',
       url: '/transt',
       icon: icons.EmojiTransportationIcon,
+      breadcrumbs: true
+    },
+    {
+      id: 'manage-uti',
+      title: <FormattedMessage id="uti" />,
+      type: 'item',
+      url: '/uti',
+      icon: icons.CleaningServicesIcon,
       breadcrumbs: true
     }
   ]

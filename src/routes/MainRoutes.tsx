@@ -13,6 +13,8 @@ const Hotel = Loadable(lazy(() => import('views/pages/hotel')));
 const Room = Loadable(lazy(() => import('views/pages/room')));
 const Booking = Loadable(lazy(() => import('views/pages/booking')));
 const Transt = Loadable(lazy(() => import('views/pages/transt')));
+const Uti = Loadable(lazy(() => import('views/pages/uti')));
+const Comment = Loadable(lazy(() => import('views/pages/comment')));
 
 const MainRoutes = {
   path: '/',
@@ -49,6 +51,14 @@ const MainRoutes = {
     {
       path: '/transt',
       element: <Transt />
+    },
+    {
+      path: '/comment',
+      element: <Comment />
+    },
+    {
+      path: '/uti',
+      element: <Uti />
     }
   ]
 };
