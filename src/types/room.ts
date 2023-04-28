@@ -23,7 +23,6 @@ export type Room = {
   name?: string;
   roomType?: string;
   description?: string;
-  hotels?: any;
   imgURL?: string;
   price?: number;
   hotel?: any;

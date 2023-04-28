@@ -98,7 +98,7 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
       description: room?.description,
       price: room?.price,
       imgURL: room?.imgURL,
-      hotels: room?.hotels
+      hotel: room?.hotel
     },
     validationSchema,
     onSubmit: (values) => {
@@ -217,11 +217,11 @@ const AddOrEditRoom = ({ open, editing, handleDrawerOpen, roomFilter, room }: Pr
                     <FormControl fullWidth>
                       <InputLabel>Hotel</InputLabel>
                       <Select
-                        id="hotels"
-                        name="hotels"
+                        id="hotel"
+                        name="hotel"
                         label="room"
                         displayEmpty
-                        value={formik.values.hotels}
+                        value={formik.values.hotel}
                         onChange={formik.handleChange}
                         inputProps={{ 'aria-label': 'Without label' }}
                       >
