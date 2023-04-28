@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 // THIRD-PARTY
 import { ButtonBase, IconButton, Menu, MenuItem, Stack, TableCell, TableRow, Typography } from '@mui/material';
 
@@ -11,58 +11,23 @@ import { dispatch } from 'store';
 
 import AlertDelete from 'ui-component/Alert/AlertDelete';
 import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
-import { Room, RoomFilter } from 'types/room';
-import { delRoom } from 'store/slices/room';
-import AddOrEditRoom from './EditorAddRoom';
-import { getDetailHotel, getHotelList } from 'store/slices/hotel';
 
-// import AlertDelete from 'ui-component/Alert/AlertDelete';
-// import { alertError, alertRequestSuccess } from 'utils/helpers/axios/errorAlert';
+import { Uti, UtiFilter } from 'types/uti';
+import { delUti } from 'store/slices/uti';
+import AddOrEditUti from './EditorAddUti';
 
 interface Props {
-  room: Room;
-  roomFilter: RoomFilter;
+  uti: Uti;
+  utiFilter: UtiFilter;
   index: number;
   getListAfterDelete: () => void;
 }
 
-const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
+const UtiList = ({ uti, index, utiFilter, getListAfterDelete }: Props) => {
   const [editing, setEditing] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState(false);
-  const [openroomDrawer, setOpenroomDrawer] = useState<boolean>(false);
+  const [openUtiDrawer, setOpenUtiDrawer] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<Element | ((element: Element) => Element) | null | undefined>(null);
-
-  const [dataHotel, setDataHotel] = useState<string>('');
-
-  const getListHotel = async () => {
-    await dispatch(getHotelList());
-  };
-
-  const getOneHotel = () => {
-    dispatch(
-      getDetailHotel({
-        // eslint-disable-next-line no-underscore-dangle
-        id: room.hotel,
-        callback: (resp) => {
-          if (resp?.status === 200) {
-            setDataHotel(resp?.data?.name);
-            alertRequestSuccess('get successfully!');
-          } else {
-            alertRequestFailure(resp?.message);
-          }
-        }
-      })
-    );
-  };
-  useEffect(() => {
-    if (room?.hotel) {
-      getOneHotel();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  useEffect(() => {
-    getListHotel();
-  }, []);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -72,22 +37,22 @@ const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
     setAnchorEl(event?.currentTarget);
   };
 
-  const handleroomDrawerOpen = async () => {
+  const handleUtiDrawerOpen = async () => {
     await setEditing(false);
-    setOpenroomDrawer((prevState) => !prevState);
+    setOpenUtiDrawer((prevState) => !prevState);
   };
 
-  const editRoom = async () => {
+  const updateUti = async () => {
     await setEditing(true);
-    setOpenroomDrawer((prevState) => !prevState);
+    setOpenUtiDrawer((prevState) => !prevState);
   };
 
   const handleModalClose = () => {
     setOpenModal(false);
     dispatch(
-      delRoom({
+      delUti({
         // eslint-disable-next-line no-underscore-dangle
-        id: room._id,
+        id: uti._id,
         callback: (resp) => {
           if (resp?.status === 200) {
             getListAfterDelete();
@@ -107,14 +72,8 @@ const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
             <Typography variant="body2">{index + 1}</Typography>
           </Stack>
         </TableCell>
-        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '200px' }}>{room.name}</TableCell>
-        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{dataHotel}</TableCell>
-        <TableCell component="th" scope="row">
-          {room.description}
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {room.price}
-        </TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '200px' }}>{uti.type}</TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{uti.price}</TableCell>
 
         <TableCell align="center">
           <ButtonBase
@@ -147,7 +106,7 @@ const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
             <MenuItem
               onClick={() => {
                 handleClose();
-                editRoom();
+                updateUti();
               }}
             >
               <EditIcon fontSize="small" sx={{ color: '#2196f3', mr: 1 }} />
@@ -163,11 +122,11 @@ const RoomList = ({ room, index, roomFilter, getListAfterDelete }: Props) => {
               Delete
             </MenuItem>
           </Menu>
-          {openModal && <AlertDelete name={room.name} open={openModal} handleClose={handleModalClose} />}
+          {openModal && <AlertDelete name={uti.type} open={openModal} handleClose={handleModalClose} />}
         </TableCell>
       </TableRow>
-      <AddOrEditRoom editing={editing} room={room} roomFilter={roomFilter} open={openroomDrawer} handleDrawerOpen={handleroomDrawerOpen} />
+      <AddOrEditUti editing={editing} uti={uti} utiFilter={utiFilter} open={openUtiDrawer} handleDrawerOpen={handleUtiDrawerOpen} />
     </>
   );
 };
-export default RoomList;
+export default UtiList;

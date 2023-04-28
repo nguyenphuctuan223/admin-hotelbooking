@@ -13,6 +13,7 @@ import { HotelState } from './hotel';
 import { BookingState } from './booking';
 import { TranstState } from './transport';
 import { ReviewState } from './comment';
+import { UtiState } from './uti';
 
 export interface DefaultRootStateProps {
   snackbar: SnackbarProps;
@@ -23,6 +24,7 @@ export interface DefaultRootStateProps {
   booking: BookingState;
   transt: TranstState;
   review: ReviewState;
+  uti: UtiState;
 }
 
 export interface ColorProps {
