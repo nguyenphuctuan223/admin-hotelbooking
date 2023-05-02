@@ -123,7 +123,6 @@ const UtiIndex = () => {
                       )
                     }}
                     value={search}
-                    placeholder="Search...."
                     size="small"
                     onChange={(e) => {
                       setSearch(e.target.value);
