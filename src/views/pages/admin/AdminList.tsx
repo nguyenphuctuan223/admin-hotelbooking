@@ -57,8 +57,6 @@ const Administrator = ({ administrator, index, adminFilter, getListAfterDelete }
         // eslint-disable-next-line no-underscore-dangle
         id: administrator._id,
         callback: (resp) => {
-          console.log('resp', resp);
-
           if (resp?.status === 200) {
             getListAfterDelete();
             alertRequestSuccess('Deleted successfully!');
