@@ -13,6 +13,7 @@ export const ROOM_URL = {
   postRoom: `room/addroom`,
   putRoom: (id: any) => `room/${id}`,
   detailRoom: (id: any) => `room/${id}`,
+  detailRoomInHotel: (id: any) => `room/findRoom/${id}`,
   delRoom: (id: any) => `room/${id}`
 };
 
@@ -102,12 +103,25 @@ export function editRoom(payload: Payload) {
     }
   };
 }
+export function RoomInHotel(payload: Payload) {
+  const { id, callback } = payload;
+  return async () => {
+    try {
+      const resp = await axios.get(ROOM_URL.detailRoomInHotel(id));
+      if (callback) {
+        callback(resp);
+      }
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
 
 export function delRoom(payload: Payload) {
   const { id, callback } = payload;
   return async () => {
     try {
-      const resp = await axios.delete(ROOM_URL.detailRoom(id));
+      const resp = await axios.delete(ROOM_URL.delRoom(id));
       dispatch(slice.actions.delRoomSuccess(resp.data));
       if (callback) {
         callback(resp);

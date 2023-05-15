@@ -156,7 +156,8 @@ const BookingIndex = () => {
               <TableCell>STT</TableCell>
               <TableCell>Customer</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Trans</TableCell>
+              <TableCell>Start Date</TableCell>
+              <TableCell>End Date</TableCell>
               <TableCell>Note</TableCell>
               <TableCell>Status</TableCell>
               <TableCell align="center">Actions</TableCell>

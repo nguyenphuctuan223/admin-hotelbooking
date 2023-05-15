@@ -21,6 +21,7 @@ export type Transt = {
   _id?: string;
   type?: string;
   price?: number;
+  hotel?: any;
   createdAt?: string;
   updatedAt?: string;
   __v?: number;

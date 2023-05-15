@@ -150,6 +150,7 @@ const TranstIndex = () => {
           <TableHead>
             <TableRow>
               <TableCell>STT</TableCell>
+              <TableCell>Hotel</TableCell>
               <TableCell>Type</TableCell>
               <TableCell>Price</TableCell>
               <TableCell align="center">Actions</TableCell>

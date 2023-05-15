@@ -25,8 +25,10 @@ export type Booking = {
   customer?: string;
   trans?: string;
   status?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  endDate?: string;
+  startDate?: string;
+  hotel?: any;
+  rooms?: any;
   __v?: number;
 };
 export type SelectProps = {

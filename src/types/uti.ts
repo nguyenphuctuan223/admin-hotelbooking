@@ -21,6 +21,7 @@ export type Uti = {
   _id?: string;
   type?: string;
   price?: number;
+  hotel?: any;
   imgURL?: string;
   createdAt?: string;
   updatedAt?: string;

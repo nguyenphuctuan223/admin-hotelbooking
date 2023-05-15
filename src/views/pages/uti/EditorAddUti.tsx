@@ -1,6 +1,20 @@
 /* eslint-disable no-underscore-dangle */
 // THIRD-PARTY
-import { Box, Button, Dialog, DialogContent, Divider, Grid, Stack, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  Divider,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material';
 
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
@@ -12,7 +26,7 @@ import * as yup from 'yup';
 import { useFormik } from 'formik';
 
 // PROJECT IMPORTS
-import { dispatch } from 'store';
+import { dispatch, useSelector } from 'store';
 import { gridSpacing } from 'store/constant';
 
 import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
@@ -39,6 +53,8 @@ const AddOrEditUti = ({ open, editing, handleDrawerOpen, utiFilter, uti }: Props
       formik.resetForm();
     }
   };
+
+  const hotelState = useSelector((state) => state.hotel);
 
   const HandleSubmit = (values: Uti) => {
     if (uti?._id) {
@@ -80,6 +96,7 @@ const AddOrEditUti = ({ open, editing, handleDrawerOpen, utiFilter, uti }: Props
       id: uti?._id,
       type: uti?.type,
       price: uti?.price,
+      hotel: uti?.hotel,
       imgURL: uti?.imgURL
     },
     validationSchema,
@@ -182,6 +199,26 @@ const AddOrEditUti = ({ open, editing, handleDrawerOpen, utiFilter, uti }: Props
                       error={formik.touched.imgURL && Boolean(formik.errors.imgURL)}
                       helperText={formik.touched.imgURL && formik.errors.imgURL}
                     />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FormControl fullWidth>
+                      <InputLabel>Hotel</InputLabel>
+                      <Select
+                        id="hotel"
+                        name="hotel"
+                        label="Hotel"
+                        displayEmpty
+                        value={formik.values.hotel}
+                        onChange={formik.handleChange}
+                        inputProps={{ 'aria-label': 'Without label' }}
+                      >
+                        {hotelState?.hotels.map((hotel: any, index: number) => (
+                          <MenuItem key={index} value={hotel._id}>
+                            {hotel.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item xs={12}>
                     <AnimateButton>

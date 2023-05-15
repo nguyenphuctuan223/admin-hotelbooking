@@ -14,6 +14,7 @@ import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
 import { Booking, BookingFilter } from 'types/booking';
 import { delBooking } from 'store/slices/booking';
 import AddOrEditBooking from './EditorAddBooking';
+import moment from 'moment';
 
 interface Props {
   booking: Booking;
@@ -73,7 +74,13 @@ const BookingList = ({ booking, index, bookingFilter, getListAfterDelete }: Prop
         </TableCell>
         <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{booking.customer}</TableCell>
         <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '200px' }}>{booking.email}</TableCell>
-        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{booking.trans}</TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>
+          {moment(booking.startDate).format('DD/MM/YYYY HH:mm')}
+        </TableCell>
+        <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>
+          {' '}
+          {moment(booking.startDate).format('DD/MM/YYYY HH:mm')}
+        </TableCell>
         <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>{booking.Note}</TableCell>
         <TableCell sx={{ textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '290px' }}>
           <Chip label={booking.status} color="error" variant="outlined" />

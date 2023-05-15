@@ -1,6 +1,21 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable no-underscore-dangle */
 // THIRD-PARTY
-import { Box, Button, Dialog, DialogContent, Divider, Grid, Stack, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  Divider,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material';
 
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
@@ -12,12 +27,15 @@ import * as yup from 'yup';
 import { useFormik } from 'formik';
 
 // PROJECT IMPORTS
-import { dispatch } from 'store';
+import { dispatch, useSelector } from 'store';
 import { gridSpacing } from 'store/constant';
 
 import { alertRequestFailure, alertRequestSuccess } from 'utils/axios';
 import { Booking, BookingFilter } from 'types/booking';
 import { addBooking, editBooking, getBookingList } from 'store/slices/booking';
+import { RoomInHotel, getRoomList } from 'store/slices/room';
+import { useEffect, useState } from 'react';
+import { getHotelList } from 'store/slices/hotel';
 
 interface Props {
   open: boolean;
@@ -32,6 +50,31 @@ const validationSchema = yup.object({
 });
 
 const AddOrEditBooking = ({ open, editing, handleDrawerOpen, bookingFilter, booking }: Props) => {
+  const hotelState: any = useSelector((state) => state.hotel);
+
+  const roomState = useSelector((state) => state.room);
+
+  const [dataRoom, setDataRoom] = useState([]);
+
+  console.log('dataRoom', dataRoom);
+  console.log(
+    'roomState',
+    roomState?.rooms.map((room: any, index: number) => room.name)
+  );
+
+  const getListRoom = async () => {
+    await dispatch(getRoomList());
+  };
+
+  const getListHotel = async () => {
+    await dispatch(getHotelList());
+  };
+
+  useEffect(() => {
+    getListRoom();
+    getListHotel();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const changeModal = (type: string) => {
     if (type === 'close') {
       handleDrawerOpen();
@@ -78,6 +121,11 @@ const AddOrEditBooking = ({ open, editing, handleDrawerOpen, bookingFilter, book
     initialValues: {
       id: booking?._id,
       email: booking?.email,
+      customer: booking?.customer,
+      hotel: booking?.hotel,
+      rooms: booking?.rooms,
+      startDate: booking?.startDate,
+      endDate: booking?.endDate,
       Note: booking?.Note
     },
     validationSchema,
@@ -85,6 +133,31 @@ const AddOrEditBooking = ({ open, editing, handleDrawerOpen, bookingFilter, book
       HandleSubmit(values);
     }
   });
+
+  console.log('formik?.values?.hotel', formik?.values?.hotel);
+
+  const getRoomHotel = () => {
+    dispatch(
+      RoomInHotel({
+        // eslint-disable-next-line no-underscore-dangle
+        id: formik?.values?.hotel,
+        callback: (resp) => {
+          if (resp?.status === 200) {
+            setDataRoom(resp);
+          } else {
+            alertRequestFailure(resp?.message);
+          }
+        }
+      })
+    );
+  };
+  useEffect(() => {
+    if (formik?.values?.hotel) {
+      console.log('1234455');
+      getRoomHotel();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <Dialog
       open={open}
@@ -139,6 +212,22 @@ const AddOrEditBooking = ({ open, editing, handleDrawerOpen, bookingFilter, book
           <form noValidate onSubmit={formik.handleSubmit}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DialogContent>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    id="customer"
+                    name="customer"
+                    label={
+                      <span>
+                        <span style={{ color: '#f44336' }}>*</span> Customer
+                      </span>
+                    }
+                    value={formik.values.customer}
+                    onChange={formik.handleChange}
+                    error={formik.touched.customer && Boolean(formik.errors.customer)}
+                    helperText={formik.touched.customer && formik.errors.customer}
+                  />
+                </Grid>
                 <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
                   <Grid item xs={12}>
                     <TextField
@@ -154,6 +243,78 @@ const AddOrEditBooking = ({ open, editing, handleDrawerOpen, bookingFilter, book
                       onChange={formik.handleChange}
                       error={formik.touched.email && Boolean(formik.errors.email)}
                       helperText={formik.touched.email && formik.errors.email}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FormControl fullWidth>
+                      <InputLabel>Hotel</InputLabel>
+                      <Select
+                        id="hotel"
+                        name="hotel"
+                        label="Hotel"
+                        displayEmpty
+                        value={formik.values.hotel}
+                        onChange={formik.handleChange}
+                        inputProps={{ 'aria-label': 'Without label' }}
+                      >
+                        {hotelState?.hotels.map((hotel: any, index: number) => (
+                          <MenuItem key={index} value={hotel._id}>
+                            {hotel.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FormControl fullWidth>
+                      <InputLabel>Room</InputLabel>
+                      <Select
+                        id="rooms"
+                        name="rooms"
+                        label="room"
+                        displayEmpty
+                        value={formik.values.rooms}
+                        onChange={formik.handleChange}
+                        inputProps={{ 'aria-label': 'Without label' }}
+                      >
+                        {roomState?.rooms.map((room: any, index: number) => (
+                          <MenuItem key={index} value={formik.values.hotel === room.hotel ? room._id : ''}>
+                            {formik.values.hotel === room.hotel ? room.name : ''}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      id="startDate"
+                      name="startDate"
+                      label={
+                        <span>
+                          <span style={{ color: '#f44336' }}>*</span> Start Date
+                        </span>
+                      }
+                      value={formik.values.startDate}
+                      onChange={formik.handleChange}
+                      error={formik.touched.startDate && Boolean(formik.errors.startDate)}
+                      helperText={formik.touched.startDate && formik.errors.startDate}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      id="endDate"
+                      name="endDate"
+                      label={
+                        <span>
+                          <span style={{ color: '#f44336' }}>*</span> End Date
+                        </span>
+                      }
+                      value={formik.values.endDate}
+                      onChange={formik.handleChange}
+                      error={formik.touched.endDate && Boolean(formik.errors.endDate)}
+                      helperText={formik.touched.endDate && formik.errors.endDate}
                     />
                   </Grid>
                   <Grid item xs={12}>
